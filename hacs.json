@@ -1,0 +1,7 @@
+{
+    "name": "Door and window integration",
+    "render_readme": true,
+    "iot_class": "Calculated",
+    "zip_release": true,
+    "filename": "homeassistant-door-and-window.zip"
+}
