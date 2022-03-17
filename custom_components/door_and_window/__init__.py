@@ -56,6 +56,18 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data[CONF_MODEL]
         )
 
+        device_registry = await async_get_registry(hass)
+
+        device_registry.async_get_or_create(
+            config_entry_id=config_entry.entry_id,
+            identifiers={
+                (DOMAIN, config_entry.entry_id)
+            },
+            name=config_entry.data[CONF_NAME],
+            model=config_entry.data[CONF_MODEL],
+            manufacturer=config_entry.data[CONF_MANUFACTURER],
+        )
+
     config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
 
     return True
