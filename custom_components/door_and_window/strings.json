@@ -10,6 +10,31 @@
         },
         "description": "Give the type and set the name. Add 'door' or 'window' in name. Example: 'Dining room window'. Name could not be changed later. Manufacturer and model fields are optional.",
         "title": "Name and type"
+      },
+      "window_dimensions": {
+        "data": {
+          "width": "Width (mm)",
+          "height": "Height (mm)",
+          "outside_depth": "Outside depth (mm)",
+          "inside_depth": "Inside depth (mm)",
+          "frame_thickness": "Frame thickness (mm)",
+          "frame_face_thickness": "Frame face thickness (mm)",
+          "parapet_wall_height": "Parapet wall height (mm)"
+        },
+        "description": "Set window dimensions. The width is the wall indent width where the window is built in. The height is the wall indent height where the window built in. Outside depth is the distance between the outside wall face and the window frame outside face. Inside depth is the distance between the window inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the window frame. Frame face thickness is the distance between the glass and the jamb-wall. Parapet wall height is the distance between the floor and the bottom of the window.",
+        "title": "Window dimensions"
+      },
+      "door_dimensions": {
+        "data": {
+          "width": "Width (mm)",
+          "height": "Height (mm)",
+          "outside_depth": "Outside depth (mm)",
+          "inside_depth": "Inside depth (mm)",
+          "frame_thickness": "Frame thickness (mm)",
+          "frame_face_thickness": "Frame face thickness (mm)"
+        },
+        "description": "Set door dimensions. The width is the wall indent width where the door is built in. The height is the wall indent height where the door built in. Outside depth is the distance between the outside wall face and the door frame outside face. Inside depth is the distance between the door inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the door frame. Frame face thickness is the distance between the glass and the jamb-wall.",
+        "title": "Door dimensions"
       }
     },
     "error": {
@@ -29,6 +54,31 @@
         },
         "description": "Change type, model, manufacturer. Manufacturer and model fields are optional.",
         "title": "Name and type"
+      },
+      "window_dimensions": {
+        "data": {
+          "width": "Width (mm)",
+          "height": "Height (mm)",
+          "outside_depth": "Outside depth (mm)",
+          "inside_depth": "Inside depth (mm)",
+          "frame_thickness": "Frame thickness (mm)",
+          "frame_face_thickness": "Frame face thickness (mm)",
+          "parapet_wall_height": "Parapet wall height (mm)"
+        },
+        "description": "Set window dimensions. The width is the wall indent width where the window is built in. The height is the wall indent height where the window built in. Outside depth is the distance between the outside wall face and the window frame outside face. Inside depth is the distance between the window inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the window frame. Frame face thickness is the distance between the glass and the jamb-wall. Parapet wall height is the distance between the floor and the bottom of the window.",
+        "title": "Window dimensions"
+      },
+      "door_dimensions": {
+        "data": {
+          "width": "Width (mm)",
+          "height": "Height (mm)",
+          "outside_depth": "Outside depth (mm)",
+          "inside_depth": "Inside depth (mm)",
+          "frame_thickness": "Frame thickness (mm)",
+          "frame_face_thickness": "Frame face thickness (mm)"
+        },
+        "description": "Set door dimensions. The width is the wall indent width where the door is built in. The height is the wall indent height where the door built in. Outside depth is the distance between the outside wall face and the door frame outside face. Inside depth is the distance between the door inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the door frame. Frame face thickness is the distance between the glass and the jamb-wall.",
+        "title": "Door dimensions"
       }
     },
     "abort": {
