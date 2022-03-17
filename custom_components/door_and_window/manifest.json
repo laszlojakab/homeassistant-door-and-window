@@ -1,0 +1,11 @@
+{
+  "domain": "door_and_window",
+  "name": "Door and window",
+  "documentation": "https://github.com/laszlojakab/homeassistant-door-and-window#usage",
+  "issue_tracker": "https://github.com/laszlojakab/homeassistant-door-and-window/issues",
+  "requirements": ["shapely==1.8.0"],
+  "config_flow": true,
+  "version": "0.0.1-beta",
+  "codeowners": ["@laszlojakab"],
+  "iot_class": "calculated"
+}
