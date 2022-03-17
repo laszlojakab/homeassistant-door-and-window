@@ -1,6 +1,38 @@
 """ The module contains the DoorAndWindow class. """
+
+
 class DoorAndWindow():
-    """ Represents a door and window object. """
+    """
+    Represents a door and window object.
+
+    Attributes:
+        type:
+            The type of door and window. Possible values: "door", "window"
+        name:
+            The name of the door and window.
+        manufacturer:
+            The manufacturer of the door and window.
+        model:
+            The model of the door and window.
+        width:
+            The width of door and window.
+        height:
+            The height of door and window.
+        frame_thickness:
+            The thickness of door and window frame.
+        frame_face_thickness:
+            The thickness of door and window frame face.
+        outside_depth:
+            The distance between the outside wall face and
+            the outside door and window frame face.
+        inside_depth:
+            The distance between the inside wall face and
+            the inside door and window frame face.
+        parapet_wall_height:
+            The height of the parapet wall. This is the distance between the floor and
+            the bottom of a window. For doors it should be 0.
+
+    """
 
     def __init__(
         self,
@@ -9,6 +41,13 @@ class DoorAndWindow():
         name: str,
         manufacturer: str,
         model: str,
+        width: float,
+        height: float,
+        frame_thickness: float,
+        frame_face_thickness: float,
+        outside_depth: float,
+        inside_depth: float,
+        parapet_wall_height: float,
     ):
         """
         Initialize a new instance of DoorAndWindow class
@@ -16,50 +55,38 @@ class DoorAndWindow():
         Args:
             type:
                 The type of door and window. Possible values: "door", "window"
-            name: str
+            name:
                 The name of the door and window.
-            manufacturer: str
+            manufacturer:
                 The manufacturer of the door and window.
-            model: str
+            model:
                 The model of the door and window.
+            width:
+                The width of door and window.
+            height:
+                The height of door and window.
+            frame_thickness:
+                The thickness of door and window frame.
+            frame_face_thickness:
+                The thickness of door and window frame face.
+            outside_depth:
+                The distance between the outside wall face and
+                the outside door and window frame face.
+            inside_depth:
+                The distance between the inside wall face and
+                the inside door and window frame face.
+            parapet_wall_height:
+                The height of the parapet wall. This is the distance between the floor and
+                the bottom of a window. For doors it should be 0.
         """
-        self._type = type
-        self._name = name
-        self._manufacturer = manufacturer
-        self._model = model
-
-    @property
-    def type(self) -> str:
-        """ Gets or sets the type of the door and window. """
-        return self._type
-
-    @type.setter
-    def type(self, value: str) -> None:
-        self._type = value
-
-    @property
-    def name(self) -> str:
-        """ Gets or sets the name of the door and window. """
-        return self._name
-
-    @name.setter
-    def name(self, value: str) -> None:
-        self._name = value
-
-    @property
-    def manufacturer(self) -> str:
-        """ Gets or sets the manufacturer of the door and window. """
-        return self._manufacturer
-
-    @manufacturer.setter
-    def manufacturer(self, value: str) -> None:
-        self._manufacturer = value
-
-    @property
-    def model(self) -> str:
-        """ Gets or sets the model of the door and window. """
-        return self._model
-
-    @model.setter
-    def model(self, value: str) -> None:
-        self._model = value
+        self.type = type
+        self.name = name
+        self.manufacturer = manufacturer
+        self.model = model
+        self.width = width
+        self.height = height
+        self.frame_face_thickness = frame_face_thickness
+        self.frame_thickness = frame_thickness
+        self.outside_depth = outside_depth
+        self.inside_depth = inside_depth
+        self.parapet_wall_height = parapet_wall_height
