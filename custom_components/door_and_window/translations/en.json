@@ -8,7 +8,7 @@
           "manufacturer": "Manufacturer",
           "model": "Model"
         },
-        "description": "Give the type and set the name. Add 'door' or 'window' in name. Example: 'Dining room window'. Manufacturer and model fields are optional.",
+        "description": "Give the type and set the name. Add 'door' or 'window' in name. Example: 'Dining room window'. Name could not be changed later. Manufacturer and model fields are optional.",
         "title": "Name and type"
       }
     },
@@ -17,6 +17,22 @@
     },
     "abort": {
       "already_configured": "Door and window already registered for this name."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "type": "Type",
+          "manufacturer": "Manufacturer",
+          "model": "Model"
+        },
+        "description": "Change type, model, manufacturer. Manufacturer and model fields are optional.",
+        "title": "Name and type"
+      }
+    },
+    "abort": {
+      "reconfigure_successful": "Reconfiguration successful. Please restart Home Assistant."
     }
   }
 }
