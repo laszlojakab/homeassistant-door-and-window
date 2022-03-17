@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "name": "Name",
+          "type": "Type",
+          "manufacturer": "Manufacturer",
+          "model": "Model"
+        },
+        "description": "Give the type and set the name. Add 'door' or 'window' in name. Example: 'Dining room window'. Manufacturer and model fields are optional.",
+        "title": "Name and type"
+      }
+    },
+    "error": {
+      "unknown_error": "Unknown error."
+    },
+    "abort": {
+      "already_configured": "Door and window already registered for this name."
+    }
+  }
+}

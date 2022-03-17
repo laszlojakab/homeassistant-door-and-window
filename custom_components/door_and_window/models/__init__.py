@@ -1,0 +1,1 @@
+"""Door and window models."""
