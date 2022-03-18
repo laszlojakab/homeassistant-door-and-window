@@ -10,7 +10,7 @@ from .const import (CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
                     CONF_HEIGHT, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
                     CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT,
                     CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN, TYPE_DOOR)
-from .data_providers import get_door_and_window
+from .data_store import get_door_and_window, set_door_and_window
 from .models.door_and_window import DoorAndWindow
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
         The value indicates whether the initialization was successful.
     """
     if config_entry.entry_id not in hass.data[DOMAIN][DATA_DOOR_AND_WINDOWS]:
-        hass.data[DOMAIN][DATA_DOOR_AND_WINDOWS][config_entry.entry_id] = DoorAndWindow(
+        set_door_and_window(hass, config_entry.entry_id, DoorAndWindow(
             config_entry.data[CONF_TYPE],
             config_entry.data[CONF_NAME],
             config_entry.data.get(CONF_MANUFACTURER),
@@ -63,7 +63,7 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data[CONF_OUTSIDE_DEPTH],
             config_entry.data[CONF_INSIDE_DEPTH],
             config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0),
-        )
+        ))
 
         device_registry = await async_get_registry(hass)
 
