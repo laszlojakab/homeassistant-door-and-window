@@ -41,7 +41,7 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
             The result of the options flow step.
         """
         if user_input is not None:
-            self.data = user_input
+            self.data = self.config_entry.data | user_input
             if user_input[CONF_TYPE] == TYPE_WINDOW:
                 return await self.async_step_window_dimensions()
             else:
