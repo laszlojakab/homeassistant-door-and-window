@@ -75,6 +75,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             name=config_entry.data[CONF_NAME],
             model=config_entry.data.get(CONF_MODEL),
             manufacturer=config_entry.data.get(CONF_MANUFACTURER),
+            sw_version=get_software_version(
+                config_entry.data[CONF_WIDTH], config_entry.data[CONF_HEIGHT])
         )
 
     config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
@@ -114,5 +116,17 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
     )
 
     device_registry.async_update_device(
-        device_entry.id, model=door_and_window.model, manufacturer=door_and_window.manufacturer
+        device_entry.id,
+        model=door_and_window.model,
+        manufacturer=door_and_window.manufacturer,
+        sw_version=get_software_version(door_and_window.width, door_and_window.height)
     )
+
+
+def get_software_version(width: float, height: float):
+    """
+    Gets the software version for the door and window device.
+
+    The version is the size of the door and window.
+    """
+    return str(width / 1000) + ' x ' + str(height / 1000)
