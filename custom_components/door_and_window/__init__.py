@@ -69,9 +69,7 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
 
         device_registry.async_get_or_create(
             config_entry_id=config_entry.entry_id,
-            identifiers={
-                (DOMAIN, config_entry.entry_id)
-            },
+            identifiers={(DOMAIN, config_entry.entry_id)},
             name=config_entry.data[CONF_NAME],
             model=config_entry.data.get(CONF_MODEL),
             manufacturer=config_entry.data.get(CONF_MANUFACTURER),
@@ -80,6 +78,11 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
         )
 
     config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
+
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(
+            config_entry, "sensor")
+    )
 
     return True
 
