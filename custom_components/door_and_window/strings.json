@@ -35,6 +35,14 @@
         },
         "description": "Set door dimensions. The width is the wall indent width where the door is built in. The height is the wall indent height where the door built in. Outside depth is the distance between the outside wall face and the door frame outside face. Inside depth is the distance between the door inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the door frame. Frame face thickness is the distance between the glass and the jamb-wall.",
         "title": "Door dimensions"
+      },
+      "facing": {
+        "data": {
+          "azimuth": "Azimuth (°)",
+          "tilt": "Tilt (°)"
+        },
+        "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
+        "title": "Facing"
       }
     },
     "error": {
@@ -79,6 +87,14 @@
         },
         "description": "Set door dimensions. The width is the wall indent width where the door is built in. The height is the wall indent height where the door built in. Outside depth is the distance between the outside wall face and the door frame outside face. Inside depth is the distance between the door inside frame face and the inside wall face. Frame thickness is the distance between the outside and the inside face of the door frame. Frame face thickness is the distance between the glass and the jamb-wall.",
         "title": "Door dimensions"
+      },
+      "facing": {
+        "data": {
+          "azimuth": "Azimuth (°)",
+          "tilt": "Tilt (°)"
+        },
+        "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
+        "title": "Facing"
       }
     },
     "abort": {

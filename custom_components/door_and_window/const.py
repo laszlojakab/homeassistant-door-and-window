@@ -18,3 +18,7 @@ CONF_OUTSIDE_DEPTH = "outside_depth"
 CONF_FRAME_THICKNESS = "frame_thickness"
 CONF_FRAME_FACE_THICKNESS = "frame_face_thickness"
 CONF_PARAPET_WALL_HEIGHT = "parapet_wall_height"
+
+# facing
+CONF_TILT = "tilt"
+CONF_AZIMUTH = "azimuth"

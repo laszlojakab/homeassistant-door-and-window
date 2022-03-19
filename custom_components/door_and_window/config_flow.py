@@ -7,9 +7,9 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import (CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
+from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
                     CONF_HEIGHT, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
-                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT,
+                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
                     CONF_TYPE, CONF_WIDTH, DOMAIN, TYPE_DOOR, TYPE_WINDOW)
 
 _LOGGER = logging.getLogger(__name__)
@@ -85,11 +85,7 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=self.data
-            )
-
-            return self.async_abort(reason="reconfigure_successful")
+            return await self.async_step_facing()
 
         return self.async_show_form(
             step_id="window_dimensions",
@@ -147,11 +143,7 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=self.data
-            )
-
-            return self.async_abort(reason="reconfigure_successful")
+            return await self.async_step_facing()
 
         return self.async_show_form(
             step_id="door_dimensions",
@@ -180,6 +172,40 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
                     CONF_FRAME_FACE_THICKNESS,
                     default=self.config_entry.data[CONF_FRAME_FACE_THICKNESS]
                 ): vol.All(vol.Coerce(int), vol.Range(min=0)),
+            })
+        )
+
+    async def async_step_facing(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of setting door and window facing.
+
+        During the this step the user can change the following properties:
+
+        - tilt
+        - azimuth
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=self.data
+            )
+
+            return self.async_abort(reason="reconfigure_successful")
+
+        return self.async_show_form(
+            step_id="facing",
+            data_schema=vol.Schema({
+                vol.Required(CONF_TILT, default=self.config_entry.data[CONF_TILT]):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=90)),
+                vol.Required(CONF_AZIMUTH, default=self.config_entry.data[CONF_AZIMUTH]):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=359)),
             })
         )
 
@@ -235,9 +261,7 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            return self.async_create_entry(
-                title=self.data[CONF_NAME], data=self.data
-            )
+            return await self.async_step_facing()
 
         return self.async_show_form(
             step_id="window_dimensions",
@@ -281,9 +305,7 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            return self.async_create_entry(
-                title=self.data[CONF_NAME], data=self.data
-            )
+            return await self.async_step_facing()
 
         return self.async_show_form(
             step_id="door_dimensions",
@@ -300,5 +322,37 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.All(vol.Coerce(int), vol.Range(min=0)),
                 vol.Required(CONF_FRAME_FACE_THICKNESS):
                     vol.All(vol.Coerce(int), vol.Range(min=0)),
+            })
+        )
+
+    async def async_step_facing(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of setting door and window facing.
+
+        During the this step the user can set the following properties:
+
+        - tilt
+        - azimuth
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            return self.async_create_entry(
+                title=self.data[CONF_NAME], data=self.data
+            )
+
+        return self.async_show_form(
+            step_id="facing",
+            data_schema=vol.Schema({
+                vol.Required(CONF_TILT, default=90):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=90)),
+                vol.Required(CONF_AZIMUTH):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=359)),
             })
         )

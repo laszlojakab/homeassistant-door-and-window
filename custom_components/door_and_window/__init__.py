@@ -6,9 +6,9 @@ from homeassistant.const import CONF_NAME
 from homeassistant.helpers.device_registry import async_get_registry
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-from .const import (CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
+from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
                     CONF_HEIGHT, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
-                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT,
+                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
                     CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN, TYPE_DOOR)
 from .data_store import get_door_and_window, set_door_and_window
 from .models.door_and_window import DoorAndWindow
@@ -63,6 +63,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data[CONF_OUTSIDE_DEPTH],
             config_entry.data[CONF_INSIDE_DEPTH],
             config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0),
+            config_entry.data[CONF_AZIMUTH],
+            config_entry.data[CONF_TILT]
         ))
 
         device_registry = await async_get_registry(hass)
@@ -111,6 +113,8 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
     door_and_window.parapet_wall_height = \
         0 if door_and_window.type == TYPE_DOOR \
         else config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0)
+    door_and_window.azimuth = config_entry.data[CONF_AZIMUTH]
+    door_and_window.tilt = config_entry.data[CONF_TILT]
 
     device_registry = await async_get_registry(hass)
 

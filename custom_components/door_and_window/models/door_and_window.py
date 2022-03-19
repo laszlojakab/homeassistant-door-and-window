@@ -31,7 +31,14 @@ class DoorAndWindow():
         parapet_wall_height:
             The height of the parapet wall. This is the distance between the floor and
             the bottom of a window. For doors it should be 0.
-
+        azimuth:
+            The azimuth of the door and window outside face.
+            For north heading door and window it is 0° for east heading
+            this value is 90°, and so on.
+        tilt:
+            The tilt of the door and window. If the window is perpendicular to the floor
+            then it should be 90° degree.
+            For roof tilted windows this value should be the roof tilt angle.
     """
 
     def __init__(
@@ -48,6 +55,8 @@ class DoorAndWindow():
         outside_depth: float,
         inside_depth: float,
         parapet_wall_height: float,
+        azimuth: float,
+        tilt: float,
     ):
         """
         Initialize a new instance of DoorAndWindow class
@@ -78,6 +87,14 @@ class DoorAndWindow():
             parapet_wall_height:
                 The height of the parapet wall. This is the distance between the floor and
                 the bottom of a window. For doors it should be 0.
+            azimuth:
+                The azimuth of the door and window outside face.
+                For north heading door and window it is 0° for east heading
+                this value is 90°, and so on.
+            tilt:
+                The tilt of the door and window. If the window is perpendicular to the floor
+                then it should be 90° degree.
+                For roof tilted windows this value should be the roof tilt angle.
         """
         self.type = type
         self.name = name
@@ -90,3 +107,5 @@ class DoorAndWindow():
         self.outside_depth = outside_depth
         self.inside_depth = inside_depth
         self.parapet_wall_height = parapet_wall_height
+        self.azimuth = azimuth
+        self.tilt = tilt
