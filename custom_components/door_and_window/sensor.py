@@ -74,6 +74,22 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         native_unit_of_measurement="mm",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="azimuth",
+        name=lambda name: f"{name} azimuth",
+        icon="mdi:compass",
+        native_unit_of_measurement="°",
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="tilt",
+        name=lambda name: f"{name} tilt",
+        icon="mdi:angle-acute",
+        native_unit_of_measurement="°",
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_registry_enabled_default=False
     )
 ]
 
