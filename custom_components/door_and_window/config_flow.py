@@ -6,11 +6,17 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.entity_registry import async_get_registry
 
-from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
-                    CONF_HEIGHT, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
-                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
-                    CONF_TYPE, CONF_WIDTH, DOMAIN, TYPE_DOOR, TYPE_WINDOW)
+from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
+                    CONF_FRAME_THICKNESS, CONF_HEIGHT, CONF_HORIZON_PROFILE,
+                    CONF_HORIZON_PROFILE_ENTITY,
+                    CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS,
+                    CONF_HORIZON_PROFILE_TYPE, CONF_INSIDE_DEPTH,
+                    CONF_MANUFACTURER, CONF_MODEL, CONF_OUTSIDE_DEPTH,
+                    CONF_PARAPET_WALL_HEIGHT, CONF_TILT, CONF_TYPE, CONF_WIDTH,
+                    DOMAIN, HORIZON_PROFILE_TYPE_DYNAMIC,
+                    HORIZON_PROFILE_TYPE_STATIC, TYPE_DOOR, TYPE_WINDOW)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -193,11 +199,7 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=self.data
-            )
-
-            return self.async_abort(reason="reconfigure_successful")
+            return await self.async_step_horizon_profile_type()
 
         return self.async_show_form(
             step_id="facing",
@@ -207,6 +209,149 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
                 vol.Required(CONF_AZIMUTH, default=self.config_entry.data[CONF_AZIMUTH]):
                     vol.All(vol.Coerce(int), vol.Range(min=0, max=359)),
             })
+        )
+
+    async def async_step_horizon_profile_type(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting horizon profile type.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            if user_input[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_STATIC:
+                return await self.async_step_static_horizon_profile()
+            else:
+                return await self.async_step_dynamic_horizon_profile()
+
+        return self.async_show_form(
+            step_id="horizon_profile_type",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_HORIZON_PROFILE_TYPE,
+                    default=self.config_entry.data[CONF_HORIZON_PROFILE_TYPE]
+                ): vol.In({HORIZON_PROFILE_TYPE_STATIC: 'Static',
+                           HORIZON_PROFILE_TYPE_DYNAMIC: 'Dynamic'})
+            })
+        )
+
+    async def async_step_dynamic_horizon_profile(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting dynamic horizon profile type.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=self.data
+            )
+
+            return self.async_abort(reason="reconfigure_successful")
+
+        entity_registry = await async_get_registry(self.hass)
+
+        return self.async_show_form(
+            step_id="dynamic_horizon_profile",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_HORIZON_PROFILE_ENTITY,
+                    default=self.config_entry.data.get(CONF_HORIZON_PROFILE_ENTITY)
+                ): vol.In([x for x in entity_registry.entities.keys() if x.startswith("sensor.")])
+            })
+        )
+
+    async def async_step_static_horizon_profile(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting static horizon profile measurements count.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            return await self.async_step_horizon_profile_measurements()
+
+        return self.async_show_form(
+            step_id="static_horizon_profile",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS,
+                    default=(self.config_entry.data.get(
+                        CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS) or 2)
+                ): vol.All(vol.Coerce(int), vol.Range(min=2, max=19))
+            })
+        )
+
+    async def async_step_horizon_profile_measurements(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting static horizon profile measurements.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data[CONF_HORIZON_PROFILE] = []
+            for i in range(0, 19):
+                if f"horizon_profile_{i}" in user_input:
+                    self.data[CONF_HORIZON_PROFILE].append(
+                        user_input[f"horizon_profile_{i}"])
+                else:
+                    break
+
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=self.data
+            )
+
+            return self.async_abort(reason="reconfigure_successful")
+
+        schema = {}
+
+        for i in range(0, self.data[CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS]):
+            schema[
+                vol.Required(
+                    f"horizon_profile_{i}",
+                    default=(self.config_entry.data[CONF_HORIZON_PROFILE][i] if i < len(
+                        self.config_entry.data[CONF_HORIZON_PROFILE]) else 0)
+                    if CONF_HORIZON_PROFILE in self.config_entry.data
+                    else 0
+                )
+            ] = vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=90))
+
+        return self.async_show_form(
+            step_id="horizon_profile_measurements",
+            data_schema=vol.Schema(schema)
         )
 
 
@@ -343,9 +488,7 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """
         if user_input is not None:
             self.data = self.data | user_input
-            return self.async_create_entry(
-                title=self.data[CONF_NAME], data=self.data
-            )
+            return await self.async_step_horizon_profile_type()
 
         return self.async_show_form(
             step_id="facing",
@@ -355,4 +498,133 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_AZIMUTH):
                     vol.All(vol.Coerce(int), vol.Range(min=0, max=359)),
             })
+        )
+
+    async def async_step_horizon_profile_type(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting horizon profile type.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+
+        if user_input is not None:
+            self.data = self.data | user_input
+            if user_input[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_STATIC:
+                return await self.async_step_static_horizon_profile()
+            else:
+                return await self.async_step_dynamic_horizon_profile()
+
+        return self.async_show_form(
+            step_id="horizon_profile_type",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_HORIZON_PROFILE_TYPE,
+                    default=HORIZON_PROFILE_TYPE_STATIC
+                ): vol.In({
+                    HORIZON_PROFILE_TYPE_STATIC: 'Static',
+                    HORIZON_PROFILE_TYPE_DYNAMIC: 'Dynamic'
+                })
+            })
+        )
+
+    async def async_step_dynamic_horizon_profile(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting dynamic horizon profile type.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+
+        if user_input is not None:
+            self.data = self.data | user_input
+            return self.async_create_entry(
+                title=self.data[CONF_NAME], data=self.data
+            )
+
+        entity_registry = await async_get_registry(self.hass)
+
+        return self.async_show_form(
+            step_id="dynamic_horizon_profile",
+            data_schema=vol.Schema({
+                vol.Required(CONF_HORIZON_PROFILE_ENTITY):
+                    vol.In([x for x in entity_registry.entities.keys() if x.startswith("sensor.")])
+            })
+        )
+
+    async def async_step_static_horizon_profile(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting static horizon profile measurements count.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            return await self.async_step_horizon_profile_measurements()
+
+        return self.async_show_form(
+            step_id="static_horizon_profile",
+            data_schema=vol.Schema({
+                vol.Required(CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS):
+                    vol.All(vol.Coerce(int), vol.Range(min=2, max=19))
+            })
+        )
+
+    async def async_step_horizon_profile_measurements(
+        self,
+        user_input: dict[str, any] = None
+    ) -> FlowResult:
+        """
+        Handles the step of setting static horizon profile measurements.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data[CONF_HORIZON_PROFILE] = []
+            for i in range(0, 19):
+                if f"horizon_profile_{i}" in user_input:
+                    self.data[CONF_HORIZON_PROFILE].append(
+                        user_input[f"horizon_profile_{i}"])
+                else:
+                    break
+
+            return self.async_create_entry(
+                title=self.data[CONF_NAME], data=self.data
+            )
+        schema = {}
+
+        for i in range(0, self.data[CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS]):
+            schema[vol.Required(f"horizon_profile_{i}", default=0)] = vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=90))
+
+        return self.async_show_form(
+            step_id="horizon_profile_measurements",
+            data_schema=vol.Schema(schema)
         )

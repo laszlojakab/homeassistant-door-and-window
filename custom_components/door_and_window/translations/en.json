@@ -43,6 +43,52 @@
         },
         "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
         "title": "Facing"
+      },
+      "horizon_profile_type": {
+        "data": {
+          "horizon_profile_type": "Type"
+        },
+        "description": "Set the horizon profile type. The horizon profile can be static if you are surround by buildings or can be dynamic in case of changing horizon profile. For example if you have a deciduous tree in front of your window than you should select dynamic because in the winter time it is barely cast any shadow but in the summer it has a shadow.",
+        "title": "Horizon profile type"
+      },
+      "dynamic_horizon_profile": {
+        "data": {
+          "horizon_profile_entity": "Entity"
+        },
+        "description": "The entity should return the array of measured horizon elevations from left to right as seen from inside the building.",
+        "title": "Dynamic horizon profile"
+      },
+      "static_horizon_profile": {
+        "data": {
+          "horizon_profile_number_of_measurements": "Number of measurements"
+        },
+        "description": "Set the number of measurement points in the horizon profile. More measurement points mean more precise shadow calculation caused by surrounding objects. In the simplest case there are at least 2 points you have to measure (for the left most you can see from your window, and for the right most you can see from your window).",
+        "title": "Number of measurements in horizon profile"
+      },
+      "horizon_profile_measurements": {
+        "data": {
+          "horizon_profile_0": "Horizon elevation at 1st point (°)",
+          "horizon_profile_1": "Horizon elevation at 2nd point (°)",
+          "horizon_profile_2": "Horizon elevation at 3rd point (°)",
+          "horizon_profile_3": "Horizon elevation at 4th point (°)",
+          "horizon_profile_4": "Horizon elevation at 5th point (°)",
+          "horizon_profile_5": "Horizon elevation at 6th point (°)",
+          "horizon_profile_6": "Horizon elevation at 7th point (°)",
+          "horizon_profile_7": "Horizon elevation at 8th point (°)",
+          "horizon_profile_8": "Horizon elevation at 9th point (°)",
+          "horizon_profile_9": "Horizon elevation at 10th point (°)",
+          "horizon_profile_10": "Horizon elevation at 11th point (°)",
+          "horizon_profile_11": "Horizon elevation at 12th point (°)",
+          "horizon_profile_12": "Horizon elevation at 13th point (°)",
+          "horizon_profile_13": "Horizon elevation at 14th point (°)",
+          "horizon_profile_14": "Horizon elevation at 15th point (°)",
+          "horizon_profile_15": "Horizon elevation at 16th point (°)",
+          "horizon_profile_16": "Horizon elevation at 17th point (°)",
+          "horizon_profile_17": "Horizon elevation at 18th point (°)",
+          "horizon_profile_18": "Horizon elevation at 19th point (°)"
+        },
+        "description": "Set horizon profile measurements. You can measure the elevation of horizon for example with a mobile phone application. Set the measured elevations at the specific points. First value should be the left most measurement from the window and the last value should be the right most measurement. Always try to measure in equal angle distances!",
+        "title": "Horizon profile"
       }
     },
     "error": {
@@ -95,6 +141,52 @@
         },
         "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
         "title": "Facing"
+      },
+      "horizon_profile_type": {
+        "data": {
+          "horizon_profile_type": "Type"
+        },
+        "description": "Set the horizon profile type. The horizon profile can be static if you are surround by buildings or can be dynamic in case of changing horizon profile. For example if you have a deciduous tree in front of your window than you should select dynamic because in the winter time it is barely cast any shadow but in the summer it has a shadow.",
+        "title": "Horizon profile type"
+      },
+      "dynamic_horizon_profile": {
+        "data": {
+          "horizon_profile_entity": "Entity"
+        },
+        "description": "The entity should return the array of measured horizon elevations from left to right as seen from inside the building.",
+        "title": "Dynamic horizon profile"
+      },
+      "static_horizon_profile": {
+        "data": {
+          "horizon_profile_number_of_measurements": "Number of measurements"
+        },
+        "description": "Set the number of measurement points in the horizon profile. More measurement points mean more precise shadow calculation caused by surrounding objects. In the simplest case there are at least 2 points you have to measure (for the left most you can see from your window, and for the right most you can see from your window).",
+        "title": "Number of measurements in horizon profile"
+      },
+      "horizon_profile_measurements": {
+        "data": {
+          "horizon_profile_0": "Horizon elevation at 1st point (°)",
+          "horizon_profile_1": "Horizon elevation at 2nd point (°)",
+          "horizon_profile_2": "Horizon elevation at 3rd point (°)",
+          "horizon_profile_3": "Horizon elevation at 4th point (°)",
+          "horizon_profile_4": "Horizon elevation at 5th point (°)",
+          "horizon_profile_5": "Horizon elevation at 6th point (°)",
+          "horizon_profile_6": "Horizon elevation at 7th point (°)",
+          "horizon_profile_7": "Horizon elevation at 8th point (°)",
+          "horizon_profile_8": "Horizon elevation at 9th point (°)",
+          "horizon_profile_9": "Horizon elevation at 10th point (°)",
+          "horizon_profile_10": "Horizon elevation at 11th point (°)",
+          "horizon_profile_11": "Horizon elevation at 12th point (°)",
+          "horizon_profile_12": "Horizon elevation at 13th point (°)",
+          "horizon_profile_13": "Horizon elevation at 14th point (°)",
+          "horizon_profile_14": "Horizon elevation at 15th point (°)",
+          "horizon_profile_15": "Horizon elevation at 16th point (°)",
+          "horizon_profile_16": "Horizon elevation at 17th point (°)",
+          "horizon_profile_17": "Horizon elevation at 18th point (°)",
+          "horizon_profile_18": "Horizon elevation at 19th point (°)"
+        },
+        "description": "Set horizon profile measurements. You can measure the elevation of horizon for example with a mobile phone application. Set the measured elevations at the specific points. First value should be the left most measurement from the window and the last value should be the right most measurement. Always try to measure in equal angle distances!",
+        "title": "Horizon profile"
       }
     },
     "abort": {

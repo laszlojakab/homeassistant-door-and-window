@@ -1,6 +1,10 @@
 """ The module contains the DoorAndWindow class. """
 
 
+from typing import List
+from .horizon_profile import HorizonProfile
+
+
 class DoorAndWindow():
     """
     Represents a door and window object.
@@ -57,6 +61,7 @@ class DoorAndWindow():
         parapet_wall_height: float,
         azimuth: float,
         tilt: float,
+        horizon_profile: HorizonProfile
     ):
         """
         Initialize a new instance of DoorAndWindow class
@@ -95,6 +100,9 @@ class DoorAndWindow():
                 The tilt of the door and window. If the window is perpendicular to the floor
                 then it should be 90° degree.
                 For roof tilted windows this value should be the roof tilt angle.
+            horizon_profile:
+                The `HorizonProfile` instance which provides the elevation values
+                of horizon as seen from the door and window.
         """
         self.type = type
         self.name = name
@@ -109,3 +117,13 @@ class DoorAndWindow():
         self.parapet_wall_height = parapet_wall_height
         self.azimuth = azimuth
         self.tilt = tilt
+        self._horizon_profile = horizon_profile
+
+    def horizon_profile(self) -> List[float]:
+        """
+        The elevation of horizon as seen from the door and window.
+        The values are the measured horizon elevation from left to
+        right in equal distances. There are at least two measurement for the most left
+        and the most right place.
+        """
+        return self._horizon_profile.get_horizon_profile()

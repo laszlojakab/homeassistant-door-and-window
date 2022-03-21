@@ -6,12 +6,16 @@ from homeassistant.const import CONF_NAME
 from homeassistant.helpers.device_registry import async_get_registry
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS, CONF_FRAME_THICKNESS,
-                    CONF_HEIGHT, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
-                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
-                    CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN, TYPE_DOOR)
+from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
+                    CONF_FRAME_THICKNESS, CONF_HEIGHT, CONF_HORIZON_PROFILE,
+                    CONF_HORIZON_PROFILE_ENTITY, CONF_HORIZON_PROFILE_TYPE,
+                    CONF_INSIDE_DEPTH, CONF_MANUFACTURER, CONF_MODEL,
+                    CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
+                    CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN,
+                    HORIZON_PROFILE_TYPE_STATIC, TYPE_DOOR)
 from .data_store import get_door_and_window, set_door_and_window
 from .models.door_and_window import DoorAndWindow
+from .models.horizon_profile import DynamicHorizonProfile, StaticHorizonProfile
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -64,7 +68,10 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data[CONF_INSIDE_DEPTH],
             config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0),
             config_entry.data[CONF_AZIMUTH],
-            config_entry.data[CONF_TILT]
+            config_entry.data[CONF_TILT],
+            StaticHorizonProfile(config_entry.data[CONF_HORIZON_PROFILE])
+            if config_entry.data[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_STATIC
+            else DynamicHorizonProfile(hass, config_entry.data[CONF_HORIZON_PROFILE_ENTITY])
         ))
 
         device_registry = await async_get_registry(hass)
@@ -115,6 +122,11 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
         else config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0)
     door_and_window.azimuth = config_entry.data[CONF_AZIMUTH]
     door_and_window.tilt = config_entry.data[CONF_TILT]
+    door_and_window.horizon_profile.destroy()
+    door_and_window.horizon_profile = \
+        StaticHorizonProfile(config_entry.data[CONF_HORIZON_PROFILE]) \
+        if config_entry.data[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_STATIC \
+        else DynamicHorizonProfile(hass, config_entry.data[CONF_HORIZON_PROFILE_ENTITY])
 
     device_registry = await async_get_registry(hass)
 
