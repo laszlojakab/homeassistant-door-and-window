@@ -127,3 +127,9 @@ class DoorAndWindow():
         and the most right place.
         """
         return self._horizon_profile.get_horizon_profile()
+
+    def destroy(self):
+        """
+        Destroyes the current instance.
+        """
+        self._horizon_profile.destroy()

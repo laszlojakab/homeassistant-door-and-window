@@ -13,7 +13,8 @@ from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
                     CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
                     CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN,
                     HORIZON_PROFILE_TYPE_STATIC, TYPE_DOOR)
-from .data_store import get_door_and_window, set_door_and_window
+from .data_store import (get_door_and_window, remove_door_and_window,
+                         set_door_and_window)
 from .models.door_and_window import DoorAndWindow
 from .models.horizon_profile import DynamicHorizonProfile, StaticHorizonProfile
 
@@ -140,6 +141,27 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
         manufacturer=door_and_window.manufacturer,
         sw_version=get_software_version(door_and_window.width, door_and_window.height)
     )
+
+
+async def async_unload_entry(hass: HomeAssistantType, config_entry: ConfigEntry):
+    """
+    Unloads the specified config entry.
+
+    Args:
+        hass:
+            The Home Assistant instance.
+        config_entry:
+            The config entry to unload.
+    """
+    if not await hass.config_entries.async_forward_entry_unload(config_entry, 'sensor'):
+        return False
+
+    door_and_window = get_door_and_window(hass, config_entry.entry_id)
+    door_and_window.destroy()
+
+    remove_door_and_window(hass, config_entry.entry_id)
+
+    return True
 
 
 def get_software_version(width: float, height: float):
