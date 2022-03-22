@@ -41,3 +41,18 @@ def get_door_and_window(
         The `DoorAndWindow` instance associated to the specified `config_entry_id`.
     """
     return hass.data[DOMAIN][DATA_DOOR_AND_WINDOWS][config_entry_id]
+
+def remove_door_and_window(
+    hass: HomeAssistantType,
+    config_entry_id: str
+) -> None:
+    """
+    Remove the DoorAndWindow instance for the specified `config_entry_id`.
+
+    Args:
+        hass:
+            The Home Assistant instance.
+        config_entry_id:
+            The config entry identifier.
+    """
+    return hass.data[DOMAIN][DATA_DOOR_AND_WINDOWS].pop(config_entry_id, None)
