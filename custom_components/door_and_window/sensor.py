@@ -130,6 +130,9 @@ class DoorAndWindowSensor(SensorEntity):
             entity_description.state_class
         )
 
+        self._track_change_dispose = None
+        self._attr_should_poll = False
+
         self._attr_device_info = {
             "identifiers": {
                 (DOMAIN, config_entry_id)
@@ -138,6 +141,19 @@ class DoorAndWindowSensor(SensorEntity):
             "model":  door_and_window.model,
             "manufacturer": door_and_window.manufacturer
         }
+
+    async def async_added_to_hass(self) -> None:
+        def update_native_value(value):
+            self._attr_native_value = value
+            self.async_schedule_update_ha_state()
+
+        on_change = getattr(self._door_and_window, f"on_{self.entity_description.key}_changed")
+
+        self._track_change_dispose = on_change(update_native_value)
+
+    async def async_will_remove_from_hass(self) -> None:
+        if self._track_change_dispose is not None:
+            self._track_change_dispose()
 
     @property
     def native_value(self) -> Union[StateType, date, datetime]:

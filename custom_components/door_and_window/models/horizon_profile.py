@@ -1,28 +1,46 @@
 """ Module of horizon profiles. """
 
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Callable, List
 
 from homeassistant.core import State
 from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers.event import async_track_state_change
 
+from .event import Event
+
 
 class HorizonProfile(ABC):
     """ Represents a horizon profile seen from a door and window. """
+
+    @property
     @abstractmethod
-    def get_horizon_profile(self) -> List[float]:
+    def horizon_profile(self) -> List[float]:
         """
-        Gets the horizon profile.
+        The horizon profile.
+        """
+
+    @abstractmethod
+    def on_horizon_profile_changed(
+        self,
+        callback: Callable[[List[float]], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the horizon_profile property has changed.
+
+        Args:
+            callback:
+                The function to call when parapet_wall_height property has changed.
 
         Returns:
-            The horizon_profile
+            A function to stop calling the callback function
+            when parapet_wall_height property has changed.
         """
 
     @abstractmethod
-    def destroy(self) -> None:
+    def dispose(self) -> None:
         """
-        Destroyes the current horizon profile.
+        Disposes the current horizon profile.
         """
 
 
@@ -39,18 +57,28 @@ class StaticHorizonProfile(HorizonProfile):
             horizon_profile:
                 The horizon profile elevation values.
         """
-        self.horion_profile = horizon_profile
+        self._horion_profile = horizon_profile
 
-    def get_horizon_profile(self) -> List[float]:
-        return self.horion_profile
+    @property
+    def horizon_profile(self) -> List[float]:
+        return self._horion_profile
 
-    def destroy(self) -> None:
+    def on_horizon_profile_changed(
+        self,
+        callback: Callable[[List[float]], None]
+    ) -> Callable[[], None]:
+        def empty_function():
+            pass
+
+        return empty_function
+
+    def dispose(self) -> None:
         pass
 
 
 class DynamicHorizonProfile(HorizonProfile):
     """
-    Represents a horizon profile which is supported by an external function.
+    Represents a horizon profile which is supported by an entity.
     """
 
     def __init__(self, hass: HomeAssistantType, horizon_profile_entity_id: str):
@@ -63,20 +91,28 @@ class DynamicHorizonProfile(HorizonProfile):
             horizon_profile_entity_id:
                 The id of the entity which provides the horizon profile.
         """
-        self.horizon_profile = [0, 0]
+        self._horizon_profile = [0, 0]
+        self._on_horizon_profile_changed = Event()
 
         # pylint: disable=unused-argument
         def update_horizon_profile(entity_id: str, old_state: State, new_state: State) -> None:
-            self.horizon_profile = new_state.state
+            self._horizon_profile = new_state.state
 
-        self.destroy_callback = async_track_state_change(
+        self._track_horizon_profile_entity_dispose = async_track_state_change(
             hass,
             horizon_profile_entity_id,
             update_horizon_profile
         )
 
-    def get_horizon_profile(self) -> List[float]:
-        return self.horizon_profile
+    @property
+    def horizon_profile(self) -> List[float]:
+        return self._horizon_profile
 
-    def destroy(self) -> None:
-        self.destroy_callback()
+    def dispose(self) -> None:
+        self._track_horizon_profile_entity_dispose()
+
+    def on_horizon_profile_changed(
+        self,
+        callback: Callable[[List[float]], None]
+    ) -> Callable[[], None]:
+        return self._on_horizon_profile_changed.add_listener(callback)
