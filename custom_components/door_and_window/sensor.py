@@ -1,6 +1,6 @@
 """ Represents the module of Door and Window integration sensors. """
-from datetime import date, datetime
 import logging
+from datetime import date, datetime
 from typing import Callable, List, Optional, Union
 
 from homeassistant.components.sensor import (SensorEntity,
@@ -11,6 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import HomeAssistantType, StateType
 
 from .const import DOMAIN
+from .coordinator import Coordinator
 from .data_store import DataStore
 from .models.door_and_window import DoorAndWindow
 
@@ -178,12 +179,12 @@ async def async_setup_entry(
             The callback to use to add sensors to Home Assistant.
     """
     data_store : DataStore = hass.data[DOMAIN]
-    door_and_window = data_store.get_door_and_window(config_entry.entry_id)
+    coordinator: Coordinator = data_store.get_coordinator(config_entry.entry_id)
     _LOGGER.info("Setting up window and door device sensors.")
 
     for descriptor in SENSOR_DESCRIPTIONS:
         async_add_entities([
-            DoorAndWindowSensor(door_and_window, config_entry.entry_id, descriptor)
+            DoorAndWindowSensor(coordinator.door_and_window, config_entry.entry_id, descriptor)
         ])
 
     _LOGGER.info("Setting up window and door device sensors completed.")
