@@ -13,6 +13,7 @@ from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
                     CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
                     CONF_TYPE, CONF_WIDTH, DOMAIN, HORIZON_PROFILE_TYPE_STATIC,
                     TYPE_DOOR)
+from .coordinator import Coordinator
 from .data_store import DataStore
 from .models.door_and_window import DoorAndWindow
 from .models.horizon_profile import DynamicHorizonProfile, StaticHorizonProfile
@@ -55,8 +56,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
 
     data_store: DataStore = hass.data[DOMAIN]
 
-    if not data_store.is_door_and_window_registered(config_entry.entry_id):
-        data_store.set_door_and_window(config_entry.entry_id, DoorAndWindow(
+    if not data_store.is_coordinator_registered(config_entry.entry_id):
+        door_and_window = DoorAndWindow(
             config_entry.data[CONF_TYPE],
             config_entry.data[CONF_NAME],
             config_entry.data.get(CONF_MANUFACTURER),
@@ -73,7 +74,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             StaticHorizonProfile(config_entry.data[CONF_HORIZON_PROFILE])
             if config_entry.data[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_STATIC
             else DynamicHorizonProfile(hass, config_entry.data[CONF_HORIZON_PROFILE_ENTITY])
-        ))
+        )
+        data_store.set_coordinator(config_entry.entry_id, Coordinator(hass, door_and_window))
 
         device_registry = await async_get_registry(hass)
 
@@ -109,7 +111,8 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
             The changed config entry.
     """
     data_store: DataStore = hass.data[DOMAIN]
-    door_and_window: DoorAndWindow = data_store.get_door_and_window(config_entry.entry_id)
+    coordinator: Coordinator = data_store.get_coordinator(config_entry.entry_id)
+    door_and_window: DoorAndWindow = coordinator.door_and_window
     door_and_window.model = config_entry.data.get(CONF_MODEL)
     door_and_window.manufacturer = config_entry.data.get(CONF_MANUFACTURER)
     door_and_window.type = config_entry.data[CONF_TYPE]
@@ -159,10 +162,10 @@ async def async_unload_entry(hass: HomeAssistantType, config_entry: ConfigEntry)
 
     data_store: DataStore = hass.data[DOMAIN]
 
-    door_and_window = data_store.get_door_and_window(config_entry.entry_id)
-    door_and_window.dispose()
+    coordinator = data_store.get_coordinator(config_entry.entry_id)
+    coordinator.dispose()
 
-    data_store.remove_door_and_window(config_entry.entry_id)
+    data_store.remove_coordinator(config_entry.entry_id)
 
     return True
 
