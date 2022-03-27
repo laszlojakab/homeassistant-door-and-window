@@ -11,10 +11,9 @@ from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
                     CONF_HORIZON_PROFILE_ENTITY, CONF_HORIZON_PROFILE_TYPE,
                     CONF_INSIDE_DEPTH, CONF_MANUFACTURER, CONF_MODEL,
                     CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
-                    CONF_TYPE, CONF_WIDTH, DATA_DOOR_AND_WINDOWS, DOMAIN,
-                    HORIZON_PROFILE_TYPE_STATIC, TYPE_DOOR)
-from .data_store import (get_door_and_window, remove_door_and_window,
-                         set_door_and_window)
+                    CONF_TYPE, CONF_WIDTH, DOMAIN, HORIZON_PROFILE_TYPE_STATIC,
+                    TYPE_DOOR)
+from .data_store import DataStore
 from .models.door_and_window import DoorAndWindow
 from .models.horizon_profile import DynamicHorizonProfile, StaticHorizonProfile
 
@@ -36,9 +35,7 @@ async def async_setup(hass: HomeAssistantType, config: ConfigType) -> bool:
     Returns:
         The value indicates whether the setup of the integration was successful.
     """
-    hass.data[DOMAIN] = {
-        DATA_DOOR_AND_WINDOWS: {}
-    }
+    hass.data[DOMAIN] = DataStore()
     return True
 
 
@@ -55,8 +52,11 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
     Returns:
         The value indicates whether the initialization was successful.
     """
-    if config_entry.entry_id not in hass.data[DOMAIN][DATA_DOOR_AND_WINDOWS]:
-        set_door_and_window(hass, config_entry.entry_id, DoorAndWindow(
+
+    data_store: DataStore = hass.data[DOMAIN]
+
+    if not data_store.is_door_and_window_registered(config_entry.entry_id):
+        data_store.set_door_and_window(config_entry.entry_id, DoorAndWindow(
             config_entry.data[CONF_TYPE],
             config_entry.data[CONF_NAME],
             config_entry.data.get(CONF_MANUFACTURER),
@@ -108,7 +108,8 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
         config_entry:
             The changed config entry.
     """
-    door_and_window: DoorAndWindow = get_door_and_window(hass, config_entry.entry_id)
+    data_store: DataStore = hass.data[DOMAIN]
+    door_and_window: DoorAndWindow = data_store.get_door_and_window(config_entry.entry_id)
     door_and_window.model = config_entry.data.get(CONF_MODEL)
     door_and_window.manufacturer = config_entry.data.get(CONF_MANUFACTURER)
     door_and_window.type = config_entry.data[CONF_TYPE]
@@ -156,10 +157,12 @@ async def async_unload_entry(hass: HomeAssistantType, config_entry: ConfigEntry)
     if not await hass.config_entries.async_forward_entry_unload(config_entry, 'sensor'):
         return False
 
-    door_and_window = get_door_and_window(hass, config_entry.entry_id)
-    door_and_window.destroy()
+    data_store: DataStore = hass.data[DOMAIN]
 
-    remove_door_and_window(hass, config_entry.entry_id)
+    door_and_window = data_store.get_door_and_window(config_entry.entry_id)
+    door_and_window.dispose()
+
+    data_store.remove_door_and_window(config_entry.entry_id)
 
     return True
 

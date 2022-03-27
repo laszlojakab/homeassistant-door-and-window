@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import HomeAssistantType, StateType
 
 from .const import DOMAIN
-from .data_store import get_door_and_window
+from .data_store import DataStore
 from .models.door_and_window import DoorAndWindow
 
 _LOGGER = logging.getLogger(__name__)
@@ -177,7 +177,8 @@ async def async_setup_entry(
         async_add_entities:
             The callback to use to add sensors to Home Assistant.
     """
-    door_and_window = get_door_and_window(hass, config_entry.entry_id)
+    data_store : DataStore = hass.data[DOMAIN]
+    door_and_window = data_store.get_door_and_window(config_entry.entry_id)
     _LOGGER.info("Setting up window and door device sensors.")
 
     for descriptor in SENSOR_DESCRIPTIONS:
