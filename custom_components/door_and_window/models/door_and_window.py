@@ -125,12 +125,12 @@ class DoorAndWindow():
         return self._horizon_profile.on_horizon_profile_changed(callback)
 
     @property
-    def width(self) -> str:
+    def width(self) -> float:
         """ The width of door and window. """
         return self._width
 
     @width.setter
-    def width(self, value: str) -> None:
+    def width(self, value: float) -> None:
         if value != self._width:
             self._width = value
             self.__get_change_event('width')(value)
@@ -152,12 +152,12 @@ class DoorAndWindow():
         return self.__track_change('width', callback)
 
     @property
-    def height(self) -> str:
+    def height(self) -> float:
         """ The height of door and window. """
         return self._height
 
     @height.setter
-    def height(self, value: str) -> None:
+    def height(self, value: float) -> None:
         if value != self._height:
             self._height = value
             self.__get_change_event('height')(value)
@@ -179,12 +179,12 @@ class DoorAndWindow():
         return self.__track_change('height', callback)
 
     @property
-    def frame_face_thickness(self) -> str:
+    def frame_face_thickness(self) -> float:
         """ The thickness of door and window frame face. """
         return self._frame_face_thickness
 
     @frame_face_thickness.setter
-    def frame_face_thickness(self, value: str) -> None:
+    def frame_face_thickness(self, value: float) -> None:
         if value != self._frame_face_thickness:
             self._frame_face_thickness = value
             self.__get_change_event('frame_face_thickness')(value)
@@ -207,12 +207,12 @@ class DoorAndWindow():
         return self.__track_change('frame_face_thickness', callback)
 
     @property
-    def frame_thickness(self) -> str:
+    def frame_thickness(self) -> float:
         """ The thickness of door and window frame. """
         return self._frame_thickness
 
     @frame_thickness.setter
-    def frame_thickness(self, value: str) -> None:
+    def frame_thickness(self, value: float) -> None:
         if value != self._frame_thickness:
             self._frame_thickness = value
             self.__get_change_event('frame_thickness')(value)
@@ -235,7 +235,7 @@ class DoorAndWindow():
         return self.__track_change('frame_thickness', callback)
 
     @property
-    def outside_depth(self) -> str:
+    def outside_depth(self) -> float:
         """
         The distance between the outside wall face and
         the outside door and window frame face.
@@ -243,7 +243,7 @@ class DoorAndWindow():
         return self._outside_depth
 
     @outside_depth.setter
-    def outside_depth(self, value: str) -> None:
+    def outside_depth(self, value: float) -> None:
         if value != self._outside_depth:
             self._outside_depth = value
             self.__get_change_event('outside_depth')(value)
@@ -266,7 +266,7 @@ class DoorAndWindow():
         return self.__track_change('outside_depth', callback)
 
     @property
-    def inside_depth(self) -> str:
+    def inside_depth(self) -> float:
         """
         The distance between the inside wall face and
         the inside door and window frame face.
@@ -274,7 +274,7 @@ class DoorAndWindow():
         return self._inside_depth
 
     @inside_depth.setter
-    def inside_depth(self, value: str) -> None:
+    def inside_depth(self, value: float) -> None:
         if value != self._inside_depth:
             self._inside_depth = value
             self.__get_change_event('inside_depth')(value)
@@ -296,7 +296,7 @@ class DoorAndWindow():
         return self.__track_change('inside_depth', callback)
 
     @property
-    def parapet_wall_height(self) -> str:
+    def parapet_wall_height(self) -> float:
         """
         The height of the parapet wall. This is the distance between the floor and
         the bottom of a window. For doors it should be 0.
@@ -304,7 +304,7 @@ class DoorAndWindow():
         return self._parapet_wall_height
 
     @parapet_wall_height.setter
-    def parapet_wall_height(self, value: str) -> None:
+    def parapet_wall_height(self, value: float) -> None:
         if value != self._parapet_wall_height:
             self._parapet_wall_height = value
             self.__get_change_event('parapet_wall_height')(value)
@@ -327,7 +327,7 @@ class DoorAndWindow():
         return self.__track_change('parapet_wall_height', callback)
 
     @property
-    def azimuth(self) -> str:
+    def azimuth(self) -> float:
         """
         The azimuth of the door and window outside face.
         For north heading door and window it is 0° for east heading
@@ -336,7 +336,7 @@ class DoorAndWindow():
         return self._azimuth
 
     @azimuth.setter
-    def azimuth(self, value: str) -> None:
+    def azimuth(self, value: float) -> None:
         if value != self._azimuth:
             self._azimuth = value
             self.__get_change_event('azimuth')(value)
@@ -358,7 +358,7 @@ class DoorAndWindow():
         return self.__track_change('azimuth', callback)
 
     @property
-    def tilt(self) -> str:
+    def tilt(self) -> float:
         """
         The tilt of the door and window. If the window is perpendicular to the floor
         then it should be 90° degree.
@@ -367,7 +367,7 @@ class DoorAndWindow():
         return self._tilt
 
     @tilt.setter
-    def tilt(self, value: str) -> None:
+    def tilt(self, value: float) -> None:
         if value != self._tilt:
             self._tilt = value
             self.__get_change_event('tilt')(value)
