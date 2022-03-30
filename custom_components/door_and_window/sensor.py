@@ -91,6 +91,22 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         native_unit_of_measurement="°",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="horizon_profile",
+        name=lambda name: f"{name} horizon profile",
+        icon="mdi:tree",
+        native_unit_of_measurement="",
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="horizon_elevation_at_sun_azimuth",
+        name=lambda name: f"{name} horizon elevation at sun azimuth",
+        icon="mdi:tree",
+        native_unit_of_measurement="°",
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_registry_enabled_default=False
     )
 ]
 
