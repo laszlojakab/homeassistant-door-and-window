@@ -1,10 +1,11 @@
 """ The module contains the DoorAndWindow class. """
 
 
-from typing import Any, Callable, List
+import math
+from typing import Any, Callable, List, Union
 
+from ..utils import normalize_angle
 from .event import Event
-from .horizon_profile import HorizonProfile
 
 
 class DoorAndWindow():
@@ -38,7 +39,7 @@ class DoorAndWindow():
         parapet_wall_height: float,
         azimuth: float,
         tilt: float,
-        horizon_profile: HorizonProfile
+        horizon_profile: List[float]
     ):
         """
         Initialize a new instance of DoorAndWindow class
@@ -78,8 +79,7 @@ class DoorAndWindow():
                 then it should be 90° degree.
                 For roof tilted windows this value should be the roof tilt angle.
             horizon_profile:
-                The `HorizonProfile` instance which provides the elevation values
-                of horizon as seen from the door and window.
+                The elevation values of horizon as seen from the door and window.
         """
         self.type = type
         self.name = name
@@ -95,6 +95,7 @@ class DoorAndWindow():
         self._azimuth = azimuth
         self._tilt = tilt
         self._horizon_profile = horizon_profile
+        self._horizon_elevation_at_sun_azimuth = None
         self._events: dict[str, Event] = {}
 
     @property
@@ -105,7 +106,13 @@ class DoorAndWindow():
         right in equal distances. There are at least two measurement for the most left
         and the most right place.
         """
-        return self._horizon_profile.horizon_profile
+        return self._horizon_profile
+
+    @horizon_profile.setter
+    def horizon_profile(self, value: List[float]) -> None:
+        if value != self._horizon_profile:
+            self._horizon_profile = value or [0, 0]
+            self.__get_change_event('horizon_profile')(value)
 
     def on_horizon_profile_changed(
         self,
@@ -122,7 +129,7 @@ class DoorAndWindow():
             A function to stop calling the callback function
             when horizon_profile property has changed.
         """
-        return self._horizon_profile.on_horizon_profile_changed(callback)
+        return self.__track_change('horizon_profile', callback)
 
     @property
     def width(self) -> float:
@@ -387,6 +394,88 @@ class DoorAndWindow():
             A function to stop calling the callback function when tilt property has changed.
         """
         return self.__track_change('tilt', callback)
+
+    @property
+    def horizon_elevation_at_sun_azimuth(self) -> Union[float, None]:
+        """
+        The horizon elevation towards the sun.
+
+        If the sun is behind the door and window the value is None.
+        """
+        return self._horizon_elevation_at_sun_azimuth
+
+    def on_horizon_elevation_at_sun_azimuth_changed(
+        self,
+        callback: Callable[[float], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the horizon_elevation_at_sun_azimuth
+        property has changed.
+
+        Args:
+            callback:
+                The function to call when horizon_elevation_at_sun_azimuth property has changed.
+
+        Returns:
+            A function to stop calling the callback function when
+            horizon_elevation_at_sun_azimuth property has changed.
+        """
+        return self.__track_change('horizon_elevation_at_sun_azimuth', callback)
+
+    def update(self, sun_azimuth: float, sun_elevation: float):
+        """
+        Updates the instance based on the sun position.
+
+        Args:
+            sun_azimuth:
+                The azimuth of the sun.
+            sun_elevation:
+                The elevation of the sun.
+        """
+        # recalculate horizon elevation at sun azimuth
+        horizon_elevation_at_sun_azimuth = None
+        azimuth = normalize_angle(sun_azimuth - self.azimuth)
+
+        sun_position = azimuth + 90
+        if sun_position >= 0 and sun_position <= 180:
+            # Sun is in front of the door and window
+
+            # We calculate the degrees between each horizon profile points
+            # this will be the horizon profile resolution
+            horizon_profile_resolution = 180 / (len(self.horizon_profile) - 1)
+
+            # We calculate the lower index at horizon profile array
+            # of the position belongs to the sun's azimuth.
+            horizon_profile_index = math.floor(sun_position / horizon_profile_resolution)
+
+            if len(self.horizon_profile) - 1 == horizon_profile_index:
+                # If the calculated horizon profile index is the last one
+                # than the sun is barely visible (a moment later it won't be),
+                # In that case we must use the last horizon profile elevation value
+                horizon_elevation_at_sun_azimuth = self.horizon_profile[-1]
+            else:
+                # We calculate a weight which will tell us
+                # the rate of the higher index elevation value
+                # must be used for calculating the actual horizon elevation
+                weight = (sun_position - horizon_profile_resolution *
+                          horizon_profile_index) / horizon_profile_resolution
+
+                # This is simple linear regression between the lower and
+                # the higher index elevation value.
+                horizon_elevation_at_sun_azimuth = \
+                    self.horizon_profile[horizon_profile_index] * (1 - weight) + \
+                    self.horizon_profile[horizon_profile_index + 1] * weight
+
+            horizon_elevation_at_sun_azimuth = round(horizon_elevation_at_sun_azimuth, 2)
+        else:
+            # sun is behind the door and window
+            horizon_elevation_at_sun_azimuth = None
+
+        if self._horizon_elevation_at_sun_azimuth != horizon_elevation_at_sun_azimuth:
+            self._horizon_elevation_at_sun_azimuth = horizon_elevation_at_sun_azimuth
+            self.__get_change_event('horizon_elevation_at_sun_azimuth')(
+                horizon_elevation_at_sun_azimuth
+            )
 
     def dispose(self):
         """
