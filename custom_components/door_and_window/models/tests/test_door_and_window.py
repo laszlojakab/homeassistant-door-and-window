@@ -1,5 +1,6 @@
 # pylint: disable=missing-function-docstring
 """Test module for `DoorAndWindow` class."""
+import math
 from typing import Any
 
 import pytest
@@ -82,5 +83,36 @@ def test_horizon_elevation_at_sun_azimuth():
     door_and_window.update(270, 45)  # sun is at west
     assert door_and_window.horizon_elevation_at_sun_azimuth == 0
 
-    door_and_window.update(180, 45) # sun is behind the window
+    door_and_window.update(180, 45)  # sun is behind the window
     assert door_and_window.horizon_elevation_at_sun_azimuth is None
+
+
+def test_angle_of_incidence():
+    door_and_window = DoorAndWindow(
+        'window',
+        'my window',
+        'manufacturer',
+        'model',
+        900,
+        1200,
+        90,
+        89,
+        100,
+        200,
+        900,
+        0,  # heading to north
+        90,
+        [0, 180]
+    )
+
+    door_and_window.update(180, 0)  # sun is behind the window
+    assert math.isclose(door_and_window.angle_of_incidence, 180)
+
+    door_and_window.update(0, 0)
+    assert math.isclose(door_and_window.angle_of_incidence, 0)
+
+    door_and_window.update(0, 30)
+    assert math.isclose(door_and_window.angle_of_incidence, 30)
+
+    door_and_window.update(0, -30)
+    assert math.isclose(door_and_window.angle_of_incidence, 30)
