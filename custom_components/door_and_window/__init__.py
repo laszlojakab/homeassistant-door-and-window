@@ -75,10 +75,7 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
         data_store.set_coordinator(config_entry.entry_id, Coordinator(
             hass,
             door_and_window,
-            "sun.sun",
-            config_entry.data[CONF_HORIZON_PROFILE_ENTITY]
-            if config_entry.data[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_DYNAMIC
-            else None
+            "sun.sun"
         ))
 
         device_registry = await async_get_registry(hass)
@@ -132,10 +129,6 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
     door_and_window.azimuth = config_entry.data[CONF_AZIMUTH]
     door_and_window.tilt = config_entry.data[CONF_TILT]
     door_and_window.horizon_profile = config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0])
-
-    coordinator.horizon_profile_entity_id = config_entry.data[CONF_HORIZON_PROFILE_ENTITY] \
-        if config_entry.data[CONF_HORIZON_PROFILE_TYPE] == HORIZON_PROFILE_TYPE_DYNAMIC \
-        else None
 
     device_registry = await async_get_registry(hass)
 

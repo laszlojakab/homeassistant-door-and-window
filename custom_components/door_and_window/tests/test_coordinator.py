@@ -15,7 +15,7 @@ def test_coordinator_init(async_track_state_change_mock):
     async_track_state_change_mock.return_value = None
     door_and_window_mock = MagicMock()
     hass = MagicMock()
-    coordinator = Coordinator(hass, door_and_window_mock, "sun.sun", None)
+    coordinator = Coordinator(hass, door_and_window_mock, "sun.sun")
 
     # should track sun's position
     async_track_state_change_mock.assert_called_once_with(hass, "sun.sun", ANY)
@@ -32,7 +32,7 @@ def test_coordinator_dispose(async_track_state_change_mock):
     async_track_state_change_mock.return_value = None
     door_and_window_mock = MagicMock()
     hass = MagicMock()
-    coordinator = Coordinator(hass, door_and_window_mock, "sun.sun", None)
+    coordinator = Coordinator(hass, door_and_window_mock, "sun.sun")
 
     coordinator.dispose()
     door_and_window_mock.dispose.assert_called_once()

@@ -44,21 +44,7 @@
         "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
         "title": "Facing"
       },
-      "horizon_profile_type": {
-        "data": {
-          "horizon_profile_type": "Type"
-        },
-        "description": "Set the horizon profile type. The horizon profile can be static if you are surround by buildings or can be dynamic in case of changing horizon profile. For example if you have a deciduous tree in front of your window than you should select dynamic because in the winter time it is barely cast any shadow but in the summer it has a shadow.",
-        "title": "Horizon profile type"
-      },
-      "dynamic_horizon_profile": {
-        "data": {
-          "horizon_profile_entity": "Entity"
-        },
-        "description": "The entity should return the array of measured horizon elevations from left to right as seen from inside the building.",
-        "title": "Dynamic horizon profile"
-      },
-      "static_horizon_profile": {
+      "horizon_profile_number_of_measurements": {
         "data": {
           "horizon_profile_number_of_measurements": "Number of measurements"
         },
@@ -142,21 +128,7 @@
         "description": "Set facing. Azimuth is the orientation of the window. 0° corresponds to north, 90° corresponds to east, 180° corresponds to south, 270° corresponds to west. The tilt is the angle between the floor and the window face. For normal windows tilt should be 90°. For a tiltable roof window tilt value should be the roof angle.",
         "title": "Facing"
       },
-      "horizon_profile_type": {
-        "data": {
-          "horizon_profile_type": "Type"
-        },
-        "description": "Set the horizon profile type. The horizon profile can be static if you are surround by buildings or can be dynamic in case of changing horizon profile. For example if you have a deciduous tree in front of your window than you should select dynamic because in the winter time it is barely cast any shadow but in the summer it has a shadow.",
-        "title": "Horizon profile type"
-      },
-      "dynamic_horizon_profile": {
-        "data": {
-          "horizon_profile_entity": "Entity"
-        },
-        "description": "The entity should return the array of measured horizon elevations from left to right as seen from inside the building.",
-        "title": "Dynamic horizon profile"
-      },
-      "static_horizon_profile": {
+      "horizon_profile_number_of_measurements": {
         "data": {
           "horizon_profile_number_of_measurements": "Number of measurements"
         },
