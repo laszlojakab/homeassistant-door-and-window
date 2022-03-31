@@ -4,6 +4,7 @@
 import math
 from typing import Any, Callable, List, Union
 
+from ..converters.angle_of_incidence import get_angle_of_incidence
 from ..utils import normalize_angle
 from .event import Event
 
@@ -96,6 +97,7 @@ class DoorAndWindow():
         self._tilt = tilt
         self._horizon_profile = horizon_profile
         self._horizon_elevation_at_sun_azimuth = None
+        self._angle_of_incidence = None
         self._events: dict[str, Event] = {}
 
     @property
@@ -422,6 +424,31 @@ class DoorAndWindow():
         """
         return self.__track_change('horizon_elevation_at_sun_azimuth', callback)
 
+    @property
+    def angle_of_incidence(self) -> Union[float, None]:
+        """
+        The angle of incidence.
+        """
+        return self._angle_of_incidence
+
+    def on_angle_of_incidence_changed(
+        self,
+        callback: Callable[[float], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the angle_of_incidence
+        property has changed.
+
+        Args:
+            callback:
+                The function to call when angle_of_incidence property has changed.
+
+        Returns:
+            A function to stop calling the callback function when
+            angle_of_incidence property has changed.
+        """
+        return self.__track_change('angle_of_incidence', callback)
+
     def update(self, sun_azimuth: float, sun_elevation: float):
         """
         Updates the instance based on the sun position.
@@ -475,6 +502,19 @@ class DoorAndWindow():
             self._horizon_elevation_at_sun_azimuth = horizon_elevation_at_sun_azimuth
             self.__get_change_event('horizon_elevation_at_sun_azimuth')(
                 horizon_elevation_at_sun_azimuth
+            )
+
+        angle_of_incidence = round(get_angle_of_incidence(
+            sun_azimuth,
+            sun_elevation,
+            self.azimuth,
+            self.tilt
+        ), 2)
+
+        if self._angle_of_incidence != angle_of_incidence:
+            self._angle_of_incidence = angle_of_incidence
+            self.__get_change_event('angle_of_incidence')(
+                angle_of_incidence
             )
 
     def dispose(self):

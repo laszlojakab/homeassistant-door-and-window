@@ -107,6 +107,14 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         native_unit_of_measurement="°",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="angle_of_incidence",
+        name=lambda name: f"{name} angle of incidence",
+        icon="mdi:angle-acute",
+        native_unit_of_measurement="°",
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_registry_enabled_default=False
     )
 ]
 
