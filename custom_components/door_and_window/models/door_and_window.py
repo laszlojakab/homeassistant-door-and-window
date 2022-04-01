@@ -521,8 +521,6 @@ class DoorAndWindow():
         """
         Destroys the current instance.
         """
-        self._horizon_profile.dispose()
-
         for event in self._events.values():
             event.clear_event_listeners()
 
