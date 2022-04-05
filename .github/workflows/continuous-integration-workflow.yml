@@ -1,0 +1,45 @@
+name: CI
+on:
+  push: 
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linters:
+    name: Linters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      - run: pip3 install homeassistant
+      - run: pip3 install numpy
+      - run: pip3 install pytest
+      - run: pip3 install pylint
+      - run: pylint ./custom_components/door_and_window/
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      - run: pip3 install homeassistant
+        name: Install Home Assistant
+      - run: pip3 install numpy
+        name: Install numpy
+      - run: pip3 install pytest
+        name: Install pytest
+      - run: pip3 install pytest-cov
+        name: Install pytest-cov
+      - run: pytest --cov --cov-report xml
+        name: Run tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
