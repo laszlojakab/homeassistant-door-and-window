@@ -48,8 +48,8 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
             self.data = self.config_entry.data | user_input
             if user_input[CONF_TYPE] == TYPE_WINDOW:
                 return await self.async_step_window_dimensions()
-            else:
-                return await self.async_step_door_dimensions()
+
+            return await self.async_step_door_dimensions()
 
         return self.async_show_form(step_id="init", data_schema=vol.Schema({
             vol.Required(
@@ -306,8 +306,8 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self.data = user_input
             if user_input[CONF_TYPE] == TYPE_WINDOW:
                 return await self.async_step_window_dimensions()
-            else:
-                return await self.async_step_door_dimensions()
+
+            return await self.async_step_door_dimensions()
 
         return self.async_show_form(step_id="user", data_schema=vol.Schema({
             vol.Required(CONF_TYPE): vol.In({TYPE_WINDOW: 'Window', TYPE_DOOR: 'Door'}),

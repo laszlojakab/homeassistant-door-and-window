@@ -2,10 +2,12 @@
 import math
 from typing import Tuple
 
+# pylint: disable=too-few-public-methods
 class CoordinateTransformations():
     """ Class for coordinate transformations. """
 
-    def _get_sin_cos(self, angle: float) -> Tuple[float, float]:
+    @classmethod
+    def _get_sin_cos(cls, angle: float) -> Tuple[float, float]:
         """
         Gets the sine and the cosine of the specified angle.
 

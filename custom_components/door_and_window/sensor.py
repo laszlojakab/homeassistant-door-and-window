@@ -18,6 +18,7 @@ from .models.door_and_window import DoorAndWindow
 _LOGGER = logging.getLogger(__name__)
 
 
+# pylint: disable=too-few-public-methods
 class DoorAndWindowSensorEntityDescriptor(SensorEntityDescription):
     """
     Describes a `DoorAndWindowSensor` entity.
@@ -202,7 +203,7 @@ async def async_setup_entry(
         async_add_entities:
             The callback to use to add sensors to Home Assistant.
     """
-    data_store : DataStore = hass.data[DOMAIN]
+    data_store: DataStore = hass.data[DOMAIN]
     coordinator: Coordinator = data_store.get_coordinator(config_entry.entry_id)
     _LOGGER.info("Setting up window and door device sensors.")
 
