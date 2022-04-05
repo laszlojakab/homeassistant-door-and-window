@@ -8,7 +8,7 @@ from ..converters.angle_of_incidence import get_angle_of_incidence
 from ..utils import normalize_angle
 from .event import Event
 
-
+# pylint: disable=too-many-instance-attributes, too-many-public-methods
 class DoorAndWindow():
     """
     Represents a door and window object.
@@ -23,7 +23,7 @@ class DoorAndWindow():
         model:
             The model of the door and window.
     """
-
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         # pylint: disable=redefined-builtin
@@ -464,7 +464,7 @@ class DoorAndWindow():
         azimuth = normalize_angle(sun_azimuth - self.azimuth)
 
         sun_position = azimuth + 90
-        if sun_position >= 0 and sun_position <= 180:
+        if 0 <= sun_position <= 180:
             # Sun is in front of the door and window
 
             # We calculate the degrees between each horizon profile points
