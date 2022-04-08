@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from ..door_and_window import DoorAndWindow
+from ...models.door_and_window import DoorAndWindow
 
 
 @pytest.mark.parametrize('prop', [

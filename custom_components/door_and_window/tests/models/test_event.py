@@ -1,5 +1,5 @@
 """ Test module for Event class. """
-from ..event import Event
+from ...models.event import Event
 
 
 def test_event_class():

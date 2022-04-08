@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from ..coordinate_transformations import CoordinateTransformations
+from ...transformers.coordinate_transformations import CoordinateTransformations
 
 
 def test_convert_polar_coordinates_to_rectanglar():
