@@ -2,7 +2,7 @@
 # pylint: disable=missing-function-docstring
 
 import math
-from ..angle_of_incidence import get_angle_of_incidence
+from ...converters.angle_of_incidence import get_angle_of_incidence
 
 
 def test_angle_of_incidence():
