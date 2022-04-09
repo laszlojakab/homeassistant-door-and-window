@@ -5,10 +5,15 @@ import math
 from typing import Any, Callable, List, Union
 
 from ..converters.angle_of_incidence import get_angle_of_incidence
+from ..converters.door_and_window_to_rectangles_converter import \
+    DoorAndWindowToRectanglesConverter
 from ..utils import normalize_angle
+from .door_and_window_rectangles import DoorAndWindowRectangles
 from .event import Event
 
 # pylint: disable=too-many-instance-attributes, too-many-public-methods
+
+
 class DoorAndWindow():
     """
     Represents a door and window object.
@@ -24,6 +29,7 @@ class DoorAndWindow():
             The model of the door and window.
     """
     # pylint: disable=too-many-arguments
+
     def __init__(
         self,
         # pylint: disable=redefined-builtin
@@ -98,6 +104,8 @@ class DoorAndWindow():
         self._horizon_profile = horizon_profile
         self._horizon_elevation_at_sun_azimuth = None
         self._angle_of_incidence = None
+        self._rectangles: DoorAndWindowRectangles = None
+        self._rectangles_spoiled: bool = True
         self._events: dict[str, Event] = {}
 
     @property
@@ -143,6 +151,7 @@ class DoorAndWindow():
         if value != self._width:
             self._width = value
             self.__get_change_event('width')(value)
+            self._rectangles_spoiled = True
 
     def on_width_changed(
         self,
@@ -170,6 +179,7 @@ class DoorAndWindow():
         if value != self._height:
             self._height = value
             self.__get_change_event('height')(value)
+            self._rectangles_spoiled = True
 
     def on_height_changed(
         self,
@@ -197,6 +207,7 @@ class DoorAndWindow():
         if value != self._frame_face_thickness:
             self._frame_face_thickness = value
             self.__get_change_event('frame_face_thickness')(value)
+            self._rectangles_spoiled = True
 
     def on_frame_face_thickness_changed(
         self,
@@ -225,6 +236,7 @@ class DoorAndWindow():
         if value != self._frame_thickness:
             self._frame_thickness = value
             self.__get_change_event('frame_thickness')(value)
+            self._rectangles_spoiled = True
 
     def on_frame_thickness_changed(
         self,
@@ -256,6 +268,7 @@ class DoorAndWindow():
         if value != self._outside_depth:
             self._outside_depth = value
             self.__get_change_event('outside_depth')(value)
+            self._rectangles_spoiled = True
 
     def on_outside_depth_changed(
         self,
@@ -287,6 +300,7 @@ class DoorAndWindow():
         if value != self._inside_depth:
             self._inside_depth = value
             self.__get_change_event('inside_depth')(value)
+            self._rectangles_spoiled = True
 
     def on_inside_depth_changed(
         self,
@@ -317,6 +331,7 @@ class DoorAndWindow():
         if value != self._parapet_wall_height:
             self._parapet_wall_height = value
             self.__get_change_event('parapet_wall_height')(value)
+            self._rectangles_spoiled = True
 
     def on_parapet_wall_height_changed(
         self,
@@ -349,6 +364,7 @@ class DoorAndWindow():
         if value != self._azimuth:
             self._azimuth = value
             self.__get_change_event('azimuth')(value)
+            self._rectangles_spoiled = True
 
     def on_azimuth_changed(
         self,
@@ -380,6 +396,7 @@ class DoorAndWindow():
         if value != self._tilt:
             self._tilt = value
             self.__get_change_event('tilt')(value)
+            self._rectangles_spoiled = True
 
     def on_tilt_changed(
         self,
@@ -504,6 +521,7 @@ class DoorAndWindow():
                 horizon_elevation_at_sun_azimuth
             )
 
+        # We calculates the angle of incidence
         angle_of_incidence = round(get_angle_of_incidence(
             sun_azimuth,
             sun_elevation,
@@ -511,11 +529,18 @@ class DoorAndWindow():
             self.tilt
         ), 2)
 
+        # If it is changed than we send a change event
         if self._angle_of_incidence != angle_of_incidence:
             self._angle_of_incidence = angle_of_incidence
             self.__get_change_event('angle_of_incidence')(
                 angle_of_incidence
             )
+
+        # If the size or faceing of the door and window change
+        # we must update the associated rectangles.
+        if self._rectangles_spoiled:
+            self._rectangles = DoorAndWindowToRectanglesConverter().convert(self)
+            self._rectangles_spoiled = False
 
     def dispose(self):
         """

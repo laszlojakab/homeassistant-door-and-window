@@ -2,9 +2,12 @@
 """Test module for `DoorAndWindow` class."""
 import math
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 
+from ...converters.door_and_window_to_rectangles_converter import \
+    DoorAndWindowToRectanglesConverter
 from ...models.door_and_window import DoorAndWindow
 
 
@@ -116,3 +119,55 @@ def test_angle_of_incidence():
 
     door_and_window.update(0, -30)
     assert math.isclose(door_and_window.angle_of_incidence, 30)
+
+
+@pytest.mark.parametrize('prop', [
+    'width',
+    'height',
+    'frame_thickness',
+    'frame_face_thickness',
+    'outside_depth',
+    'inside_depth',
+    'azimuth',
+    'tilt'
+])
+def test_if_rectangles_updated(prop: str):
+    with patch.object(
+        DoorAndWindowToRectanglesConverter,
+        'convert',
+        return_value=None
+    ) as convert_mock:
+        door_and_window = DoorAndWindow(
+            'window',
+            'my window',
+            'manufacturer',
+            'model',
+            900,
+            1200,
+            90,
+            89,
+            100,
+            200,
+            900,
+            0,
+            90,
+            [0, 0]
+        )
+
+        # rectangle converting should not be called before updating
+        convert_mock.assert_not_called()
+
+        door_and_window.update(1, 0)
+
+        # rectangle converting should be called after updating (and no property changed)
+        convert_mock.assert_called_once()
+
+        setattr(door_and_window, prop, 999)
+
+        # should not call rectangle updates
+        convert_mock.assert_called_once()
+
+        door_and_window.update(2, 0)
+
+        # rectangle converting should be called after updating (and no property changed)
+        assert convert_mock.call_count == 2
