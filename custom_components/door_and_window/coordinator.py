@@ -1,8 +1,12 @@
 """ The module for coordinator. """
+from typing import Callable, List
+
 from homeassistant.core import State
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.typing import HomeAssistantType
 
+from .converters.door_and_window_to_rectangles_converter import \
+    DoorAndWindowToRectanglesConverter
 from .models.door_and_window import DoorAndWindow
 
 
@@ -31,6 +35,20 @@ class Coordinator():
         """
         self._door_and_window = door_and_window
         self._hass = hass
+        self._rectangles = DoorAndWindowToRectanglesConverter().convert(door_and_window)
+
+        # initialize door and window size and facing tracking
+        self._door_and_window_events_disposes: List[Callable[[], None]] = [
+            self._door_and_window.on_azimuth_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_frame_face_thickness_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_frame_thickness_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_height_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_inside_depth_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_outside_depth_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_parapet_wall_height_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_tilt_changed(self._on_needs_rectangles_update),
+            self._door_and_window.on_width_changed(self._on_needs_rectangles_update),
+        ]
 
         # initialize sun tracking
         self._track_sun_entity_dispose = async_track_state_change(
@@ -55,9 +73,19 @@ class Coordinator():
             float(new_state.attributes['elevation'])
         )
 
+    # pylint: disable=unused-argument
+    def _on_needs_rectangles_update(self, new_value: float):
+        """
+        Updates the rectangles of door and window whenever
+        the door and window size or facing parameters has changed.
+        """
+        self._rectangles = DoorAndWindowToRectanglesConverter().convert(self._door_and_window)
+
     def dispose(self):
         """
         Removes all change tracking.
         """
         self._door_and_window.dispose()
         self._track_sun_entity_dispose()
+        for dispose_door_and_window_event in self._door_and_window_events_disposes:
+            dispose_door_and_window_event()
