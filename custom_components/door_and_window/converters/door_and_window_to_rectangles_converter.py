@@ -1,8 +1,14 @@
 """ Module for door and window to rectangles converter. """
-from ..models.door_and_window import DoorAndWindow
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ..models.door_and_window_rectangles import DoorAndWindowRectangles
 from ..models.quadrilateral import Quadrilateral
 from ..transformers.coordinate_transformations import CoordinateTransformations
+
+if TYPE_CHECKING:
+    from ..models.door_and_window import DoorAndWindow
 
 # pylint: disable=too-few-public-methods
 
