@@ -70,24 +70,26 @@ def test_if_sun_below_horizon():
     converter = DoorAndWindowRectanglesToLightInformationConverter()
     door_and_window_rectangles = get_door_and_window_rectangles()
 
-    light_info = converter.convert(door_and_window_rectangles, 0, 30, 0, 20)
+    light_info = converter.convert(door_and_window_rectangles, 30, 0, 90, 0, 20)
 
     assert light_info.sunny_glazing_area_polygon.area == 0
+
 
 def test_if_sun_is_behind_door_and_window():
     """ Tests if the sunny glazing polygon is empty if sun is behind the door and window. """
     converter = DoorAndWindowRectanglesToLightInformationConverter()
     door_and_window_rectangles = get_door_and_window_rectangles()
 
-    light_info = converter.convert(door_and_window_rectangles, 110, 0, 0, 45)
+    light_info = converter.convert(door_and_window_rectangles, 0, 0, 90, 180, 45)
 
     assert light_info.sunny_glazing_area_polygon.area == 0
+
 
 def test_if_sun_is_in_front_of_door_and_window():
     """ Tests if the sunny glazing polygon is not empty if sun is in front of the window. """
     converter = DoorAndWindowRectanglesToLightInformationConverter()
     door_and_window_rectangles = get_door_and_window_rectangles()
 
-    light_info = converter.convert(door_and_window_rectangles, 45, 0, 0, 45)
+    light_info = converter.convert(door_and_window_rectangles, 0, 0, 90, 0, 45)
 
     assert light_info.sunny_glazing_area_polygon.area > 0

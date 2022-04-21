@@ -5,10 +5,15 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+from shapely.geometry import Polygon
 
+from ...converters.door_and_window_rectangles_to_light_information_converter import \
+    DoorAndWindowRectanglesToLightInformationConverter
 from ...converters.door_and_window_to_rectangles_converter import \
     DoorAndWindowToRectanglesConverter
 from ...models.door_and_window import DoorAndWindow
+from ...models.door_and_window_light_information import \
+    DoorAndWindowLightInformation
 
 
 @pytest.mark.parametrize('prop', [
@@ -137,37 +142,42 @@ def test_if_rectangles_updated(prop: str):
         'convert',
         return_value=None
     ) as convert_mock:
-        door_and_window = DoorAndWindow(
-            'window',
-            'my window',
-            'manufacturer',
-            'model',
-            900,
-            1200,
-            90,
-            89,
-            100,
-            200,
-            900,
-            0,
-            90,
-            [0, 0]
-        )
+        with patch.object(
+            DoorAndWindowRectanglesToLightInformationConverter,
+            'convert',
+            return_value=DoorAndWindowLightInformation(0, Polygon())
+        ):
+            door_and_window = DoorAndWindow(
+                'window',
+                'my window',
+                'manufacturer',
+                'model',
+                900,
+                1200,
+                90,
+                89,
+                100,
+                200,
+                900,
+                0,
+                90,
+                [0, 0]
+            )
 
-        # rectangle converting should not be called before updating
-        convert_mock.assert_not_called()
+            # rectangle converting should not be called before updating
+            convert_mock.assert_not_called()
 
-        door_and_window.update(1, 0)
+            door_and_window.update(1, 0)
 
-        # rectangle converting should be called after updating (and no property changed)
-        convert_mock.assert_called_once()
+            # rectangle converting should be called after updating (and no property changed)
+            convert_mock.assert_called_once()
 
-        setattr(door_and_window, prop, 999)
+            setattr(door_and_window, prop, 999)
 
-        # should not call rectangle updates
-        convert_mock.assert_called_once()
+            # should not call rectangle updates
+            convert_mock.assert_called_once()
 
-        door_and_window.update(2, 0)
+            door_and_window.update(2, 0)
 
-        # rectangle converting should be called after updating (and no property changed)
-        assert convert_mock.call_count == 2
+            # rectangle converting should be called after updating (and no property changed)
+            assert convert_mock.call_count == 2

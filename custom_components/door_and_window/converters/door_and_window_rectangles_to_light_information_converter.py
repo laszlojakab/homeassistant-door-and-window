@@ -1,6 +1,7 @@
 """ Module for DoorAndWindowRectanglesToLightInformationConverter class. """
 from shapely.geometry import Polygon
 
+from ..converters.angle_of_incidence import get_angle_of_incidence
 from ..converters.door_and_window_rectangles_to_polygons_converter import \
     DoorAndWindowRectanglesToPolygonsConverter
 from ..models.door_and_window_light_information import \
@@ -8,6 +9,7 @@ from ..models.door_and_window_light_information import \
 from ..models.door_and_window_rectangles import DoorAndWindowRectangles
 from ..transformers.door_and_window_seen_from_sun_transformer import \
     DoorAndWindowRectanglesSeenFromSunTransformer
+
 
 # pylint: disable=too-few-public-methods
 class DoorAndWindowRectanglesToLightInformationConverter():
@@ -18,8 +20,9 @@ class DoorAndWindowRectanglesToLightInformationConverter():
     def convert(
         cls,
         door_and_window_rectangles: DoorAndWindowRectangles,
-        angle_of_incidence: float,
         horizon_elevation_at_sun_azimuth: float,
+        door_and_window_azimuth: float,
+        door_and_window_tilt: float,
         solar_azimuth: float,
         solar_elevation: float
     ) -> DoorAndWindowLightInformation:
@@ -30,10 +33,12 @@ class DoorAndWindowRectanglesToLightInformationConverter():
         Args:
             door_and_window_rectangles:
                 The door and window rectangles to convert.
-            angle_of_incidence:
-                The angle of incidence.
             horizon_elevation_at_sun_azimuth:
                 The horizon elevation at sun azimuth.
+            door_and_window_azimuth:
+                The door and window's azimuth.
+            door_and_window_tilt:
+                The door and window's tilt.
             solar_azimuth:
                 The sun's azimuth.
             solar_elevation:
@@ -43,6 +48,14 @@ class DoorAndWindowRectanglesToLightInformationConverter():
             The door and window light information instance
             which describes the light state of the door and window.
         """
+
+        angle_of_incidence = round(get_angle_of_incidence(
+            solar_azimuth,
+            solar_elevation,
+            door_and_window_azimuth,
+            door_and_window_tilt
+        ), 2)
+
         if angle_of_incidence >= 90:
             # the sun is behind the door and window
             return DoorAndWindowLightInformation(angle_of_incidence, Polygon())
