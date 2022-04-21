@@ -6,7 +6,7 @@ from typing import Callable, List, Optional, Union
 from homeassistant.components.sensor import (SensorEntity,
                                              SensorEntityDescription)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import HomeAssistantType, StateType
 
@@ -34,7 +34,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} width",
         icon="mdi:arrow-left-right",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -42,7 +42,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} height",
         icon="mdi:arrow-up-down",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -50,7 +50,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} inside depth",
         icon="mdi:arrow-top-right-bottom-left",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -58,7 +58,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} outside depth",
         icon="mdi:arrow-top-right-bottom-left",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -66,7 +66,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} frame thickness",
         icon="mdi:rectangle-outline",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -74,7 +74,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} frame face depth",
         icon="mdi:rectangle-outline",
         native_unit_of_measurement="mm",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -82,7 +82,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} azimuth",
         icon="mdi:compass",
         native_unit_of_measurement="°",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -90,7 +90,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} tilt",
         icon="mdi:angle-acute",
         native_unit_of_measurement="°",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -98,7 +98,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} horizon profile",
         icon="mdi:tree",
         native_unit_of_measurement="",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -106,7 +106,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} horizon elevation at sun azimuth",
         icon="mdi:tree",
         native_unit_of_measurement="°",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     ),
     DoorAndWindowSensorEntityDescriptor(
@@ -114,7 +114,7 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         name=lambda name: f"{name} angle of incidence",
         icon="mdi:angle-acute",
         native_unit_of_measurement="°",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
     )
 ]
