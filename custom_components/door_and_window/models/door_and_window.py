@@ -105,6 +105,7 @@ class DoorAndWindow():
         self._horizon_profile = horizon_profile
         self._horizon_elevation_at_sun_azimuth = None
         self._angle_of_incidence = None
+        self._sunny_glazing_area: Union[float, None] = None
         self._rectangles: DoorAndWindowRectangles = None
         self._rectangles_spoiled: bool = True
         self._events: dict[str, Event] = {}
@@ -467,6 +468,31 @@ class DoorAndWindow():
         """
         return self.__track_change('angle_of_incidence', callback)
 
+    @property
+    def sunny_glazing_area(self) -> Union[float, None]:
+        """
+        The sunny glazing area.
+        """
+        return self._sunny_glazing_area
+
+    def on_sunny_glazing_area_changed(
+        self,
+        callback: Callable[[float], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the sunny_glazing_area
+        property has changed.
+
+        Args:
+            callback:
+                The function to call when sunny_glazing_area property has changed.
+
+        Returns:
+            A function to stop calling the callback function when
+            sunny_glazing_area property has changed.
+        """
+        return self.__track_change('sunny_glazing_area', callback)
+
     def update(self, sun_azimuth: float, sun_elevation: float):
         """
         Updates the instance based on the sun position.
@@ -537,11 +563,19 @@ class DoorAndWindow():
             sun_elevation
         )
 
-        # If it is changed than we send a change event
+        # If angle of incidence has changed than we send a change event
         if self._angle_of_incidence != light_information.angle_of_incidence:
             self._angle_of_incidence = light_information.angle_of_incidence
             self.__get_change_event('angle_of_incidence')(
                 self._angle_of_incidence
+            )
+
+        # If sunny glazing area has changed than we send a change event
+        sunny_glazing_area: float = round(light_information.sunny_glazing_area_polygon.area, 2)
+        if self._sunny_glazing_area != sunny_glazing_area:
+            self._sunny_glazing_area = sunny_glazing_area
+            self.__get_change_event('sunny_glazing_area')(
+                self._sunny_glazing_area
             )
 
     def dispose(self):
