@@ -19,6 +19,7 @@ jobs:
       - run: pip3 install numpy
       - run: pip3 install pytest
       - run: pip3 install pylint
+      - run: pip3 install shapely
       - run: pylint ./custom_components/door_and_window/
 
   tests:
@@ -39,6 +40,8 @@ jobs:
         name: Install pytest
       - run: pip3 install pytest-cov
         name: Install pytest-cov
+      - run: pip3 install shapely
+        name: Install Shapely
       - run: pytest --cov --cov-report xml
         name: Run tests
       - name: Upload coverage to Codecov
