@@ -4,7 +4,8 @@
 import math
 from typing import Any, Callable, List, Union
 
-from ..converters.angle_of_incidence import get_angle_of_incidence
+from ..converters.door_and_window_rectangles_to_light_information_converter import \
+    DoorAndWindowRectanglesToLightInformationConverter
 from ..converters.door_and_window_to_rectangles_converter import \
     DoorAndWindowToRectanglesConverter
 from ..utils import normalize_angle
@@ -521,26 +522,27 @@ class DoorAndWindow():
                 horizon_elevation_at_sun_azimuth
             )
 
-        # We calculates the angle of incidence
-        angle_of_incidence = round(get_angle_of_incidence(
-            sun_azimuth,
-            sun_elevation,
-            self.azimuth,
-            self.tilt
-        ), 2)
-
-        # If it is changed than we send a change event
-        if self._angle_of_incidence != angle_of_incidence:
-            self._angle_of_incidence = angle_of_incidence
-            self.__get_change_event('angle_of_incidence')(
-                angle_of_incidence
-            )
-
         # If the size or faceing of the door and window change
         # we must update the associated rectangles.
         if self._rectangles_spoiled:
             self._rectangles = DoorAndWindowToRectanglesConverter().convert(self)
             self._rectangles_spoiled = False
+
+        light_information = DoorAndWindowRectanglesToLightInformationConverter().convert(
+            self._rectangles,
+            self._horizon_elevation_at_sun_azimuth,
+            self.azimuth,
+            self.tilt,
+            sun_azimuth,
+            sun_elevation
+        )
+
+        # If it is changed than we send a change event
+        if self._angle_of_incidence != light_information.angle_of_incidence:
+            self._angle_of_incidence = light_information.angle_of_incidence
+            self.__get_change_event('angle_of_incidence')(
+                self._angle_of_incidence
+            )
 
     def dispose(self):
         """
