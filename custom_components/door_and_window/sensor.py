@@ -116,6 +116,14 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
         native_unit_of_measurement="°",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False
+    ),
+    DoorAndWindowSensorEntityDescriptor(
+        key="sunny_glazing_area",
+        name=lambda name: f"{name} sunny glazing area",
+        icon="mdi:mirror-rectangle",
+        native_unit_of_measurement="mm²",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False
     )
 ]
 
