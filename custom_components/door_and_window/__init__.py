@@ -94,7 +94,14 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
 
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(
-            config_entry, "sensor")
+            config_entry, "sensor"
+        )
+    )
+
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(
+            config_entry, "binary_sensor"
+        )
     )
 
     return True
@@ -155,6 +162,9 @@ async def async_unload_entry(hass: HomeAssistantType, config_entry: ConfigEntry)
             The config entry to unload.
     """
     if not await hass.config_entries.async_forward_entry_unload(config_entry, 'sensor'):
+        return False
+
+    if not await hass.config_entries.async_forward_entry_unload(config_entry, 'binary_sensor'):
         return False
 
     data_store: DataStore = hass.data[DOMAIN]
