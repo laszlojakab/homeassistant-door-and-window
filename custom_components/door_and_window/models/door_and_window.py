@@ -106,6 +106,7 @@ class DoorAndWindow():
         self._horizon_elevation_at_sun_azimuth = None
         self._angle_of_incidence = None
         self._sunny_glazing_area: Union[float, None] = None
+        self._sunny_glazing_area_percentage: Union[float, None] = None
         self._rectangles: DoorAndWindowRectangles = None
         self._rectangles_spoiled: bool = True
         self._events: dict[str, Event] = {}
@@ -493,6 +494,31 @@ class DoorAndWindow():
         """
         return self.__track_change('sunny_glazing_area', callback)
 
+    @property
+    def sunny_glazing_area_percentage(self) -> Union[float, None]:
+        """
+        The sunny glazing area percentage.
+        """
+        return self._sunny_glazing_area_percentage
+
+    def on_sunny_glazing_area_percentage_changed(
+        self,
+        callback: Callable[[float], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the sunny_glazing_area_percentage
+        property has changed.
+
+        Args:
+            callback:
+                The function to call when sunny_glazing_area_percentage property has changed.
+
+        Returns:
+            A function to stop calling the callback function when
+            sunny_glazing_area_percentage property has changed.
+        """
+        return self.__track_change('sunny_glazing_area_percentage', callback)
+
     def update(self, sun_azimuth: float, sun_elevation: float):
         """
         Updates the instance based on the sun position.
@@ -576,6 +602,16 @@ class DoorAndWindow():
             self._sunny_glazing_area = sunny_glazing_area
             self.__get_change_event('sunny_glazing_area')(
                 self._sunny_glazing_area
+            )
+
+        # Calculate sunny glazing area percentage and send a change event if has changed
+        glazing_area = (self.width - self.frame_face_thickness * 2) * \
+            (self.height - self.frame_face_thickness * 2)
+        sunny_glazing_area_percentage = round(sunny_glazing_area / glazing_area * 100, 2)
+        if self._sunny_glazing_area_percentage != sunny_glazing_area_percentage:
+            self._sunny_glazing_area_percentage = sunny_glazing_area_percentage
+            self.__get_change_event('sunny_glazing_area_percentage')(
+                self._sunny_glazing_area_percentage
             )
 
     def dispose(self):
