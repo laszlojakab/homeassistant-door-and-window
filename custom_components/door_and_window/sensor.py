@@ -10,7 +10,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import HomeAssistantType, StateType
 
-from .const import DOMAIN
+from .const import DOMAIN, TYPE_WINDOW
 from .coordinator import Coordinator
 from .data_store import DataStore
 from .models.door_and_window import DoorAndWindow
@@ -135,6 +135,16 @@ SENSOR_DESCRIPTIONS: List[DoorAndWindowSensorEntityDescriptor] = [
     )
 ]
 
+WINDOW_SENSOR_DESCRIPTORS: List[DoorAndWindowSensorEntityDescriptor] = [
+    DoorAndWindowSensorEntityDescriptor(
+        key="parapet_wall_height",
+        name=lambda name: f"{name} parapet wall height",
+        icon="mdi:mirror-rectangle",
+        native_unit_of_measurement="mm",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False
+    )
+]
 
 class DoorAndWindowSensor(SensorEntity):
     """ Represents a sensor which value is directly calculated from a `DoorAndWindow` instance. """
@@ -227,5 +237,11 @@ async def async_setup_entry(
         async_add_entities([
             DoorAndWindowSensor(coordinator.door_and_window, config_entry.entry_id, descriptor)
         ])
+
+    if coordinator.door_and_window.type == TYPE_WINDOW:
+        for descriptor in WINDOW_SENSOR_DESCRIPTORS:
+            async_add_entities([
+                DoorAndWindowSensor(coordinator.door_and_window, config_entry.entry_id, descriptor)
+            ])
 
     _LOGGER.info("Setting up window and door device sensors completed.")
