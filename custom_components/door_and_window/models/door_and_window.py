@@ -107,6 +107,7 @@ class DoorAndWindow():
         self._angle_of_incidence = None
         self._sunny_glazing_area: Union[float, None] = None
         self._sunny_glazing_area_percentage: Union[float, None] = None
+        self._glazing_has_direct_sunlight: Union[bool, None] = None
         self._rectangles: DoorAndWindowRectangles = None
         self._rectangles_spoiled: bool = True
         self._events: dict[str, Event] = {}
@@ -519,6 +520,31 @@ class DoorAndWindow():
         """
         return self.__track_change('sunny_glazing_area_percentage', callback)
 
+    @property
+    def glazing_has_direct_sunlight(self) -> Union[bool, None]:
+        """
+        The value indicates whether the glazing has direct sunlight.
+        """
+        return self._glazing_has_direct_sunlight
+
+    def on_glazing_has_direct_sunlight_changed(
+        self,
+        callback: Callable[[bool], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the glazing_has_direct_sunlight
+        property has changed.
+
+        Args:
+            callback:
+                The function to call when glazing_has_direct_sunlight property has changed.
+
+        Returns:
+            A function to stop calling the callback function when
+            glazing_has_direct_sunlight property has changed.
+        """
+        return self.__track_change('glazing_has_direct_sunlight', callback)
+
     def update(self, sun_azimuth: float, sun_elevation: float):
         """
         Updates the instance based on the sun position.
@@ -612,6 +638,14 @@ class DoorAndWindow():
             self._sunny_glazing_area_percentage = sunny_glazing_area_percentage
             self.__get_change_event('sunny_glazing_area_percentage')(
                 self._sunny_glazing_area_percentage
+            )
+
+        # If sunny glazing area has changed than we send a change event
+        glazing_has_direct_sunlight: bool = sunny_glazing_area > 0.01
+        if self._glazing_has_direct_sunlight != glazing_has_direct_sunlight:
+            self._glazing_has_direct_sunlight = glazing_has_direct_sunlight
+            self.__get_change_event('glazing_has_direct_sunlight')(
+                self._glazing_has_direct_sunlight
             )
 
     def dispose(self):
