@@ -151,6 +151,31 @@ def test_sunny_glazing_area():
     assert math.isclose(door_and_window.sunny_glazing_area, (900 - 89*2) * (1200 - 89*2))
 
 
+def test_sunny_glazing_area_percentage():
+    door_and_window = DoorAndWindow(
+        'window',
+        'my window',
+        'manufacturer',
+        'model',
+        900,
+        1200,
+        90,
+        89,
+        100,
+        200,
+        900,
+        0,  # heading to north
+        90,
+        [0, 0]
+    )
+
+    door_and_window.update(180, 0)  # sun is behind the window
+    assert math.isclose(door_and_window.sunny_glazing_area_percentage, 0)
+
+    door_and_window.update(0, 0)  # sun is in front of the window
+    assert math.isclose(door_and_window.sunny_glazing_area_percentage, 100)
+
+
 @pytest.mark.parametrize('prop', [
     'width',
     'height',
