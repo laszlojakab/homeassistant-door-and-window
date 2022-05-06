@@ -2,15 +2,16 @@
 
 
 import math
-from typing import Any, Callable, List, Union
+from typing import Callable, List, Union
 
 from ..converters.door_and_window_rectangles_to_light_information_converter import \
     DoorAndWindowRectanglesToLightInformationConverter
 from ..converters.door_and_window_to_rectangles_converter import \
     DoorAndWindowToRectanglesConverter
 from ..utils import normalize_angle
+
 from .door_and_window_rectangles import DoorAndWindowRectangles
-from .event import Event
+from .event_handler import EventHandler
 
 # pylint: disable=too-many-instance-attributes, too-many-public-methods
 
@@ -29,7 +30,7 @@ class DoorAndWindow():
         model:
             The model of the door and window.
     """
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, too-many-locals
 
     def __init__(
         self,
@@ -94,23 +95,37 @@ class DoorAndWindow():
         self.manufacturer = manufacturer
         self.model = model
         self._width = width
+        self._width_changed = EventHandler()
         self._height = height
+        self._height_changed = EventHandler()
         self._frame_face_thickness = frame_face_thickness
+        self._frame_face_thickness_changed = EventHandler()
         self._frame_thickness = frame_thickness
+        self._frame_thickness_changed = EventHandler()
         self._outside_depth = outside_depth
+        self._outside_depth_changed = EventHandler()
         self._inside_depth = inside_depth
+        self._inside_depth_changed = EventHandler()
         self._parapet_wall_height = parapet_wall_height
+        self._parapet_wall_height_changed = EventHandler()
         self._azimuth = azimuth
+        self._azimuth_changed = EventHandler()
         self._tilt = tilt
+        self._tilt_changed = EventHandler()
         self._horizon_profile = horizon_profile
+        self._horizon_profile_changed = EventHandler()
         self._horizon_elevation_at_sun_azimuth = None
+        self._horizon_elevation_at_sun_azimuth_changed = EventHandler()
         self._angle_of_incidence = None
+        self._angle_of_incidence_changed = EventHandler()
         self._sunny_glazing_area: Union[float, None] = None
+        self._sunny_glazing_area_changed = EventHandler()
         self._sunny_glazing_area_percentage: Union[float, None] = None
+        self._sunny_glazing_area_percentage_changed = EventHandler()
         self._glazing_has_direct_sunlight: Union[bool, None] = None
+        self._glazing_has_direct_sunlight_changed = EventHandler()
         self._rectangles: DoorAndWindowRectangles = None
         self._rectangles_spoiled: bool = True
-        self._events: dict[str, Event] = {}
 
     @property
     def horizon_profile(self) -> List[float]:
@@ -126,7 +141,7 @@ class DoorAndWindow():
     def horizon_profile(self, value: List[float]) -> None:
         if value != self._horizon_profile:
             self._horizon_profile = value or [0, 0]
-            self.__get_change_event('horizon_profile')(value)
+            self._horizon_profile_changed.fire(value)
 
     def on_horizon_profile_changed(
         self,
@@ -143,7 +158,7 @@ class DoorAndWindow():
             A function to stop calling the callback function
             when horizon_profile property has changed.
         """
-        return self.__track_change('horizon_profile', callback)
+        return self._horizon_profile_changed.listen(callback)
 
     @property
     def width(self) -> float:
@@ -154,7 +169,7 @@ class DoorAndWindow():
     def width(self, value: float) -> None:
         if value != self._width:
             self._width = value
-            self.__get_change_event('width')(value)
+            self._width_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_width_changed(
@@ -171,7 +186,7 @@ class DoorAndWindow():
         Returns:
             A function to stop calling the callback function when width property has changed.
         """
-        return self.__track_change('width', callback)
+        return self._width_changed.listen(callback)
 
     @property
     def height(self) -> float:
@@ -182,7 +197,7 @@ class DoorAndWindow():
     def height(self, value: float) -> None:
         if value != self._height:
             self._height = value
-            self.__get_change_event('height')(value)
+            self._height_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_height_changed(
@@ -199,7 +214,7 @@ class DoorAndWindow():
         Returns:
             A function to stop calling the callback function when height property has changed.
         """
-        return self.__track_change('height', callback)
+        return self._height_changed.listen(callback)
 
     @property
     def frame_face_thickness(self) -> float:
@@ -210,7 +225,7 @@ class DoorAndWindow():
     def frame_face_thickness(self, value: float) -> None:
         if value != self._frame_face_thickness:
             self._frame_face_thickness = value
-            self.__get_change_event('frame_face_thickness')(value)
+            self._frame_face_thickness_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_frame_face_thickness_changed(
@@ -228,7 +243,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             frame_face_thickness property has changed.
         """
-        return self.__track_change('frame_face_thickness', callback)
+        return self._frame_face_thickness_changed.listen(callback)
 
     @property
     def frame_thickness(self) -> float:
@@ -239,7 +254,7 @@ class DoorAndWindow():
     def frame_thickness(self, value: float) -> None:
         if value != self._frame_thickness:
             self._frame_thickness = value
-            self.__get_change_event('frame_thickness')(value)
+            self._frame_thickness_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_frame_thickness_changed(
@@ -257,7 +272,7 @@ class DoorAndWindow():
             A function to stop calling the callback function
             when frame_thickness property has changed.
         """
-        return self.__track_change('frame_thickness', callback)
+        return self._frame_thickness_changed.listen(callback)
 
     @property
     def outside_depth(self) -> float:
@@ -271,7 +286,7 @@ class DoorAndWindow():
     def outside_depth(self, value: float) -> None:
         if value != self._outside_depth:
             self._outside_depth = value
-            self.__get_change_event('outside_depth')(value)
+            self._outside_depth_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_outside_depth_changed(
@@ -289,7 +304,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             outside_depth property has changed.
         """
-        return self.__track_change('outside_depth', callback)
+        return self._outside_depth_changed.listen(callback)
 
     @property
     def inside_depth(self) -> float:
@@ -303,7 +318,7 @@ class DoorAndWindow():
     def inside_depth(self, value: float) -> None:
         if value != self._inside_depth:
             self._inside_depth = value
-            self.__get_change_event('inside_depth')(value)
+            self._inside_depth_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_inside_depth_changed(
@@ -320,7 +335,7 @@ class DoorAndWindow():
         Returns:
             A function to stop calling the callback function when inside_depth property has changed.
         """
-        return self.__track_change('inside_depth', callback)
+        return self._inside_depth_changed.listen(callback)
 
     @property
     def parapet_wall_height(self) -> float:
@@ -334,7 +349,7 @@ class DoorAndWindow():
     def parapet_wall_height(self, value: float) -> None:
         if value != self._parapet_wall_height:
             self._parapet_wall_height = value
-            self.__get_change_event('parapet_wall_height')(value)
+            self._parapet_wall_height_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_parapet_wall_height_changed(
@@ -352,7 +367,7 @@ class DoorAndWindow():
             A function to stop calling the callback function
             when parapet_wall_height property has changed.
         """
-        return self.__track_change('parapet_wall_height', callback)
+        return self._parapet_wall_height_changed.listen(callback)
 
     @property
     def azimuth(self) -> float:
@@ -367,7 +382,7 @@ class DoorAndWindow():
     def azimuth(self, value: float) -> None:
         if value != self._azimuth:
             self._azimuth = value
-            self.__get_change_event('azimuth')(value)
+            self._azimuth_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_azimuth_changed(
@@ -384,7 +399,7 @@ class DoorAndWindow():
         Returns:
             A function to stop calling the callback function when azimuth property has changed.
         """
-        return self.__track_change('azimuth', callback)
+        return self._azimuth_changed.listen(callback)
 
     @property
     def tilt(self) -> float:
@@ -399,7 +414,7 @@ class DoorAndWindow():
     def tilt(self, value: float) -> None:
         if value != self._tilt:
             self._tilt = value
-            self.__get_change_event('tilt')(value)
+            self._tilt_changed.fire(value)
             self._rectangles_spoiled = True
 
     def on_tilt_changed(
@@ -416,7 +431,7 @@ class DoorAndWindow():
         Returns:
             A function to stop calling the callback function when tilt property has changed.
         """
-        return self.__track_change('tilt', callback)
+        return self._tilt_changed.listen(callback)
 
     @property
     def horizon_elevation_at_sun_azimuth(self) -> Union[float, None]:
@@ -443,7 +458,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             horizon_elevation_at_sun_azimuth property has changed.
         """
-        return self.__track_change('horizon_elevation_at_sun_azimuth', callback)
+        return self._horizon_elevation_at_sun_azimuth_changed.listen(callback)
 
     @property
     def angle_of_incidence(self) -> Union[float, None]:
@@ -468,7 +483,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             angle_of_incidence property has changed.
         """
-        return self.__track_change('angle_of_incidence', callback)
+        return self._angle_of_incidence_changed.listen(callback)
 
     @property
     def sunny_glazing_area(self) -> Union[float, None]:
@@ -493,7 +508,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             sunny_glazing_area property has changed.
         """
-        return self.__track_change('sunny_glazing_area', callback)
+        return self._sunny_glazing_area_changed.listen(callback)
 
     @property
     def sunny_glazing_area_percentage(self) -> Union[float, None]:
@@ -518,7 +533,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             sunny_glazing_area_percentage property has changed.
         """
-        return self.__track_change('sunny_glazing_area_percentage', callback)
+        return self._sunny_glazing_area_percentage_changed.listen(callback)
 
     @property
     def glazing_has_direct_sunlight(self) -> Union[bool, None]:
@@ -543,7 +558,7 @@ class DoorAndWindow():
             A function to stop calling the callback function when
             glazing_has_direct_sunlight property has changed.
         """
-        return self.__track_change('glazing_has_direct_sunlight', callback)
+        return self._glazing_has_direct_sunlight_changed.listen(callback)
 
     def update(self, sun_azimuth: float, sun_elevation: float):
         """
@@ -596,9 +611,7 @@ class DoorAndWindow():
 
         if self._horizon_elevation_at_sun_azimuth != horizon_elevation_at_sun_azimuth:
             self._horizon_elevation_at_sun_azimuth = horizon_elevation_at_sun_azimuth
-            self.__get_change_event('horizon_elevation_at_sun_azimuth')(
-                horizon_elevation_at_sun_azimuth
-            )
+            self._horizon_elevation_at_sun_azimuth_changed.fire(horizon_elevation_at_sun_azimuth)
 
         # If the size or faceing of the door and window change
         # we must update the associated rectangles.
@@ -618,17 +631,13 @@ class DoorAndWindow():
         # If angle of incidence has changed than we send a change event
         if self._angle_of_incidence != light_information.angle_of_incidence:
             self._angle_of_incidence = light_information.angle_of_incidence
-            self.__get_change_event('angle_of_incidence')(
-                self._angle_of_incidence
-            )
+            self._angle_of_incidence_changed.fire(self._angle_of_incidence)
 
         # If sunny glazing area has changed than we send a change event
         sunny_glazing_area: float = round(light_information.sunny_glazing_area_polygon.area, 2)
         if self._sunny_glazing_area != sunny_glazing_area:
             self._sunny_glazing_area = sunny_glazing_area
-            self.__get_change_event('sunny_glazing_area')(
-                self._sunny_glazing_area
-            )
+            self._sunny_glazing_area_changed.fire(self._sunny_glazing_area)
 
         # Calculate sunny glazing area percentage and send a change event if has changed
         glazing_area = (self.width - self.frame_face_thickness * 2) * \
@@ -636,41 +645,30 @@ class DoorAndWindow():
         sunny_glazing_area_percentage = round(sunny_glazing_area / glazing_area * 100, 2)
         if self._sunny_glazing_area_percentage != sunny_glazing_area_percentage:
             self._sunny_glazing_area_percentage = sunny_glazing_area_percentage
-            self.__get_change_event('sunny_glazing_area_percentage')(
-                self._sunny_glazing_area_percentage
-            )
+            self._sunny_glazing_area_percentage_changed.fire(self._sunny_glazing_area_percentage)
 
         # If sunny glazing area has changed than we send a change event
         glazing_has_direct_sunlight: bool = sunny_glazing_area > 0.01
         if self._glazing_has_direct_sunlight != glazing_has_direct_sunlight:
             self._glazing_has_direct_sunlight = glazing_has_direct_sunlight
-            self.__get_change_event('glazing_has_direct_sunlight')(
-                self._glazing_has_direct_sunlight
-            )
+            self._glazing_has_direct_sunlight_changed.fire(self._glazing_has_direct_sunlight)
 
     def dispose(self):
         """
         Destroys the current instance.
         """
-        for event in self._events.values():
-            event.clear_event_listeners()
-
-    def __track_change(self, prop: str, callback: Callable[[Any], None]) -> Callable[[], None]:
-        """
-        Tracks the change of a property
-        """
-        event = self.__get_change_event(prop)
-        event.add_listener(callback)
-
-        def untrack():
-            event = self.__get_change_event(prop)
-            event.remove_listener(callback)
-
-        return untrack
-
-    def __get_change_event(self, prop: str):
-        event = self._events.get(prop, None)
-        if event is None:
-            self._events[prop] = event = event = Event()
-
-        return event
+        self._width_changed.dispose()
+        self._height_changed.dispose()
+        self._frame_face_thickness_changed.dispose()
+        self._frame_thickness_changed.dispose()
+        self._outside_depth_changed.dispose()
+        self._inside_depth_changed.dispose()
+        self._parapet_wall_height_changed.dispose()
+        self._azimuth_changed.dispose()
+        self._tilt_changed.dispose()
+        self._horizon_profile_changed.dispose()
+        self._horizon_elevation_at_sun_azimuth_changed.dispose()
+        self._angle_of_incidence_changed.dispose()
+        self._sunny_glazing_area_changed.dispose()
+        self._sunny_glazing_area_percentage_changed.dispose()
+        self._glazing_has_direct_sunlight_changed.dispose()
