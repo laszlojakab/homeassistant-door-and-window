@@ -256,5 +256,7 @@ class DoorAndWindowToRectanglesConverter():
                     door_and_window.parapet_wall_height,
                     door_and_window.frame_thickness
                 ]
-            ).apply_matrix(transformation_matrix)
+            ).apply_matrix(transformation_matrix),
+
+            awning=None # TODO: convert awning
         )

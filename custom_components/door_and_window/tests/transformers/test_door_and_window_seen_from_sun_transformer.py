@@ -22,7 +22,8 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_in_front():
         Quadrilateral([5, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([6, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([7, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
-        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11])
+        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
+        None # TODO: add test for Awning
     )
 
     door_and_window_rectangles_seen_from_sun = transformer.transform(
@@ -90,7 +91,8 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_on_the_side():
         Quadrilateral([5, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([6, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([7, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
-        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11])
+        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
+        None # TODO: add test for Awning
     )
 
     door_and_window_rectangles_seen_from_sun = transformer.transform(

@@ -61,7 +61,8 @@ def get_door_and_window_rectangles():
             [-500, 900, 290],
             [500, 900, 290],
             [500, 900, 90],
-        )
+        ),
+        None # TODO: add tests for Awning
     )
 
 

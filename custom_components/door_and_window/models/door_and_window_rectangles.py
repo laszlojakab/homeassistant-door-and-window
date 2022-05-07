@@ -1,5 +1,5 @@
 """ The module contains DoorAndWindowRectangles class. """
-from typing import Final
+from typing import Final, Union
 
 import numpy as np
 
@@ -41,7 +41,8 @@ class DoorAndWindowRectangles:
         inside_left_jamb_wall: Quadrilateral,
         inside_right_jamb_wall: Quadrilateral,
         inside_head_jamb_wall: Quadrilateral,
-        inside_stool: Quadrilateral
+        inside_stool: Quadrilateral,
+        awning: Union[Quadrilateral, None]
     ):
         """
         Initialize a new instance of DoorAndWindowRectangles class.
@@ -65,6 +66,8 @@ class DoorAndWindowRectangles:
                 The rectangle represents the head inside jamb wall.
             inside_stool:
                 The rectangle represents inside stool.
+            awning:
+                The rectangle represents the awning. None if no awning defined.
         """
         self.glazing: Final[Quadrilateral] = glazing
         self.outside_left_jamb_wall: Final[Quadrilateral] = outside_left_jamb_wall
@@ -75,8 +78,9 @@ class DoorAndWindowRectangles:
         self.inside_right_jamb_wall: Final[Quadrilateral] = inside_right_jamb_wall
         self.inside_head_jamb_wall: Final[Quadrilateral] = inside_head_jamb_wall
         self.inside_stool: Final[Quadrilateral] = inside_stool
+        self.awning: Final[Union[Quadrilateral, None]] = awning
 
-    def apply_matrix(self, transformation_matrix: np.ndarray) -> None:
+    def apply_matrix(self, transformation_matrix: np.ndarray):
         """
         Applies the specified transformation matrix to all the rectangles
         and returns a new instance of DoorAndWindowRectangles with these transformed faces.
@@ -98,5 +102,6 @@ class DoorAndWindowRectangles:
             inside_left_jamb_wall=self.inside_left_jamb_wall.apply_matrix(transformation_matrix),
             inside_right_jamb_wall=self.inside_right_jamb_wall.apply_matrix(transformation_matrix),
             inside_head_jamb_wall=self.inside_head_jamb_wall.apply_matrix(transformation_matrix),
-            inside_stool=self.inside_stool.apply_matrix(transformation_matrix)
+            inside_stool=self.inside_stool.apply_matrix(transformation_matrix),
+            awning=None if self.awning is None else self.awning.apply_matrix(transformation_matrix)
         )
