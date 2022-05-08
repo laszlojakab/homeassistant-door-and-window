@@ -83,6 +83,7 @@ class DoorAndWindowRectanglesToLightInformationConverter():
             .difference(door_and_window_polygons.outside_left_jamb_wall) \
             .difference(door_and_window_polygons.outside_right_jamb_wall) \
             .difference(door_and_window_polygons.outside_head_jamb_wall) \
-            .difference(door_and_window_polygons.outside_stool)
+            .difference(door_and_window_polygons.outside_stool) \
+            .difference(door_and_window_polygons.awning)
 
         return DoorAndWindowLightInformation(angle_of_incidence, sunny_glazing_area_polygon)
