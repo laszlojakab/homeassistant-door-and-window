@@ -39,7 +39,8 @@ class DoorAndWindowRectanglesToPolygonsConverter():
             inside_head_jamb_wall=self._convert_rectangle_to_polygon(
                 door_and_window_rectangles.inside_head_jamb_wall),
             inside_stool=self._convert_rectangle_to_polygon(
-                door_and_window_rectangles.inside_stool)
+                door_and_window_rectangles.inside_stool),
+            awning=None # TODO
         )
 
     @classmethod
