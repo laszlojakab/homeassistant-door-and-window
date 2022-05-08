@@ -6,9 +6,15 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.entity_registry import async_get_registry
 
-from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
-                    CONF_FRAME_THICKNESS, CONF_HEIGHT, CONF_HORIZON_PROFILE,
+from .const import (CONF_AWNING_CLOSEST_TOP, CONF_AWNING_COVER_ENTITY,
+                    CONF_AWNING_DISTANCE, CONF_AWNING_FARTHEST_TOP,
+                    CONF_AWNING_LEFT_DISTANCE, CONF_AWNING_MAX_DEPTH,
+                    CONF_AWNING_MIN_DEPTH, CONF_AWNING_RIGHT_DISTANCE,
+                    CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
+                    CONF_FRAME_THICKNESS, CONF_HAS_AWNING, CONF_HEIGHT,
+                    CONF_HORIZON_PROFILE,
                     CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS,
                     CONF_HORIZON_PROFILE_TYPE, CONF_INSIDE_DEPTH,
                     CONF_MANUFACTURER, CONF_MODEL, CONF_OUTSIDE_DEPTH,
@@ -19,6 +25,7 @@ from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
 _LOGGER = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-locals
 class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
     """ The options flow handler for the Door and window integration. """
 
@@ -262,11 +269,7 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
                 else:
                     break
 
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=self.data
-            )
-
-            return self.async_abort(reason="reconfigure_successful")
+            return await self.async_step_has_awning()
 
         schema = {}
 
@@ -285,6 +288,97 @@ class WindowAndDoorDeviceOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="horizon_profile_measurements",
             data_schema=vol.Schema(schema)
+        )
+
+    async def async_step_has_awning(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of querying if an awning attached to the door and window.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            if self.data[CONF_HAS_AWNING]:
+                return await self.async_step_awning()
+
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=self.data
+            )
+
+            return self.async_abort(reason="reconfigure_successful")
+
+        return self.async_show_form(
+            step_id="has_awning",
+            data_schema=vol.Schema({
+                vol.Required(CONF_HAS_AWNING, default=self.config_entry.data[CONF_HAS_AWNING]): bool
+            })
+        )
+
+    async def async_step_awning(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of setting awning parameters.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=self.data
+            )
+
+            return self.async_abort(reason="reconfigure_successful")
+
+        entity_registry = await async_get_registry(self.hass)
+
+        return self.async_show_form(
+            step_id="awning",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_AWNING_MIN_DEPTH,
+                    default=self.config_entry.data[CONF_AWNING_MIN_DEPTH]
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=10000)),
+                vol.Required(
+                    CONF_AWNING_MAX_DEPTH,
+                    default=self.config_entry.data[CONF_AWNING_MAX_DEPTH]
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=10000)),
+                vol.Required(
+                    CONF_AWNING_LEFT_DISTANCE,
+                    default=self.config_entry.data[CONF_AWNING_LEFT_DISTANCE]
+                ): vol.All(vol.Coerce(int), vol.Range(min=-10000, max=10000)),
+                vol.Required(
+                    CONF_AWNING_RIGHT_DISTANCE,
+                    default=self.config_entry.data[CONF_AWNING_RIGHT_DISTANCE]
+                ): vol.All(vol.Coerce(int), vol.Range(min=-10000, max=10000)),
+                vol.Required(
+                    CONF_AWNING_CLOSEST_TOP,
+                    default=self.config_entry.data[CONF_AWNING_CLOSEST_TOP]
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1500)),
+                vol.Required(
+                    CONF_AWNING_FARTHEST_TOP,
+                    default=self.config_entry.data[CONF_AWNING_FARTHEST_TOP]
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1500)),
+                vol.Required(
+                    CONF_AWNING_DISTANCE,
+                    default=self.config_entry.data[CONF_AWNING_DISTANCE]
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=5000)),
+                vol.Optional(
+                    CONF_AWNING_COVER_ENTITY,
+                    default=self.config_entry.data.get(CONF_AWNING_COVER_ENTITY, None)
+                ): vol.In(
+                    [None] + [x for x in entity_registry.entities.keys() if x.startswith("cover.")]
+                )
+            })
         )
 
 
@@ -483,9 +577,8 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 else:
                     break
 
-            return self.async_create_entry(
-                title=self.data[CONF_NAME], data=self.data
-            )
+            return await self.async_step_has_awning()
+
         schema = {}
 
         for i in range(0, self.data[CONF_HORIZON_PROFILE_NUMBER_OF_MEASUREMENTS]):
@@ -495,4 +588,75 @@ class WindowAndDoorDeviceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="horizon_profile_measurements",
             data_schema=vol.Schema(schema)
+        )
+
+    async def async_step_has_awning(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of querying if an awning attached to the door and window.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            if self.data[CONF_HAS_AWNING]:
+                return await self.async_step_awning()
+
+            return self.async_create_entry(
+                title=self.data[CONF_NAME], data=self.data
+            )
+
+        return self.async_show_form(
+            step_id="has_awning",
+            data_schema=vol.Schema({
+                vol.Required(CONF_HAS_AWNING): bool
+            })
+        )
+
+    async def async_step_awning(self, user_input: dict[str, any] = None) -> FlowResult:
+        """
+        Handles the step of setting awning parameters.
+
+        Args:
+            user_input:
+                The values entered by the user on the UI.
+
+        Returns:
+            The result of the options flow step.
+        """
+        if user_input is not None:
+            self.data = self.data | user_input
+            return self.async_create_entry(
+                title=self.data[CONF_NAME], data=self.data
+            )
+
+        entity_registry = await async_get_registry(self.hass)
+
+        return self.async_show_form(
+            step_id="awning",
+            data_schema=vol.Schema({
+                vol.Required(CONF_AWNING_MIN_DEPTH):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=10000)),
+                vol.Required(CONF_AWNING_MAX_DEPTH):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=10000)),
+                vol.Required(CONF_AWNING_LEFT_DISTANCE, default=0):
+                    vol.All(vol.Coerce(int), vol.Range(min=-10000, max=10000)),
+                vol.Required(CONF_AWNING_RIGHT_DISTANCE, default=0):
+                    vol.All(vol.Coerce(int), vol.Range(min=-10000, max=10000)),
+                vol.Required(CONF_AWNING_CLOSEST_TOP):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=1500)),
+                vol.Required(CONF_AWNING_FARTHEST_TOP):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=1500)),
+                vol.Required(CONF_AWNING_DISTANCE, default=0):
+                    vol.All(vol.Coerce(int), vol.Range(min=0, max=5000)),
+                vol.Optional(CONF_AWNING_COVER_ENTITY):
+                    vol.In(
+                        [""] +
+                        [x for x in entity_registry.entities.keys() if x.startswith("cover.")]
+                )
+            })
         )
