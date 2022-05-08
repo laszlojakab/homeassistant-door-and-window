@@ -22,7 +22,8 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_in_front():
         Quadrilateral([5, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([6, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([7, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
-        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11])
+        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
+        Quadrilateral([9, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
     )
 
     door_and_window_rectangles_seen_from_sun = transformer.transform(
@@ -73,6 +74,11 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_in_front():
         door_and_window_rectangles_seen_from_sun.outside_stool
     )
 
+    assert_quadrilaterals_are_close(
+        door_and_window_rectangles.awning,
+        door_and_window_rectangles_seen_from_sun.awning
+    )
+
 
 def test_door_and_window_seen_from_sun_transformer_if_sun_is_on_the_side():
     """
@@ -90,7 +96,8 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_on_the_side():
         Quadrilateral([5, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([6, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([7, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
-        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11])
+        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
+        Quadrilateral([9, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
     )
 
     door_and_window_rectangles_seen_from_sun = transformer.transform(
@@ -148,4 +155,10 @@ def test_door_and_window_seen_from_sun_transformer_if_sun_is_on_the_side():
         door_and_window_rectangles_seen_from_sun.inside_stool,
         Quadrilateral([-2, 1, 8], [-5, 4, 3], [-8, 7, 6], [-11, 10, 9]),
         'Inside stool '
+    )
+
+    assert_quadrilaterals_are_close(
+        door_and_window_rectangles_seen_from_sun.awning,
+        Quadrilateral([-2, 1, 9], [-5, 4, 3], [-8, 7, 6], [-11, 10, 9]),
+        'Awning '
     )

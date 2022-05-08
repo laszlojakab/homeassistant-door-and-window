@@ -17,6 +17,7 @@ def test_attributes():
         inside_right_jamb_wall=Quadrilateral([6, 0, 0], [6, 10, 0], [6, 10, 15], [6, 4, 5]),
         inside_head_jamb_wall=Quadrilateral([7, 0, 0], [7, 10, 0], [7, 10, 15], [7, 4, 5]),
         inside_stool=Quadrilateral([8, 0, 0], [8, 10, 0], [8, 10, 15], [8, 4, 5]),
+        awning=Quadrilateral([9, 0, 0], [9, 10, 0], [9, 10, 15], [9, 4, 5]),
     )
 
     assert door_and_window_rectangles.glazing == Quadrilateral(
@@ -67,14 +68,18 @@ def test_attributes():
         [7, 10, 15],
         [7, 4, 5]
     )
-
     assert door_and_window_rectangles.inside_stool == Quadrilateral(
         [8, 0, 0],
         [8, 10, 0],
         [8, 10, 15],
         [8, 4, 5]
     )
-
+    assert door_and_window_rectangles.awning == Quadrilateral(
+        [9, 0, 0],
+        [9, 10, 0],
+        [9, 10, 15],
+        [9, 4, 5]
+    )
 
 def test_apply_matrix():
     """ Tests if the apply_matrix called to all the rectangles in the instance. """
@@ -88,6 +93,7 @@ def test_apply_matrix():
         inside_right_jamb_wall=Quadrilateral([6, 0, 0], [6, 8, 0], [6, 8, 6], [6, 4, 5]),
         inside_head_jamb_wall=Quadrilateral([7, 0, 0], [7, 8, 0], [7, 8, 6], [7, 4, 5]),
         inside_stool=Quadrilateral([8, 0, 0], [8, 8, 0], [8, 8, 6], [8, 4, 5]),
+        awning=Quadrilateral([9, 0, 0], [9, 10, 0], [9, 10, 15], [9, 4, 5]),
     )
 
     translate_x = 3
@@ -157,4 +163,11 @@ def test_apply_matrix():
         [8 + translate_x, 8 + translate_y, 0 + translate_z],
         [8 + translate_x, 8 + translate_y, 6 + translate_z],
         [8 + translate_x, 4 + translate_y, 5 + translate_z]
+    )
+
+    assert translated_door_and_window_rectangles.awning == Quadrilateral(
+        [9 + translate_x, 0 + translate_y, 0 + translate_z],
+        [9 + translate_x, 10 + translate_y, 0 + translate_z],
+        [9 + translate_x, 10 + translate_y, 15 + translate_z],
+        [9 + translate_x, 4 + translate_y, 5 + translate_z]
     )

@@ -16,6 +16,7 @@ def test_door_and_window_polygons_properties():
     inside_right_jamb_wall = Polygon([(0, 6), (1, 0), (1, 1)])
     inside_head_jamb_wall = Polygon([(0, 7), (1, 0), (1, 1)])
     inside_stool = Polygon([(0, 8), (1, 0), (1, 1)])
+    awning = Polygon([(0, 9), (1, 0), (1, 1)])
 
     door_and_window_polygons = DoorAndWindowPolygons(
         glazing,
@@ -26,7 +27,8 @@ def test_door_and_window_polygons_properties():
         inside_left_jamb_wall,
         inside_right_jamb_wall,
         inside_head_jamb_wall,
-        inside_stool
+        inside_stool,
+        awning
     )
 
     assert door_and_window_polygons.glazing == glazing
@@ -38,3 +40,4 @@ def test_door_and_window_polygons_properties():
     assert door_and_window_polygons.inside_right_jamb_wall == inside_right_jamb_wall
     assert door_and_window_polygons.inside_head_jamb_wall == inside_head_jamb_wall
     assert door_and_window_polygons.inside_stool == inside_stool
+    assert door_and_window_polygons.awning == awning

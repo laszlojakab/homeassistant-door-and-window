@@ -20,7 +20,8 @@ def test_door_and_window_rectangles_to_polygons_converter():
         Quadrilateral([5, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([6, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
         Quadrilateral([7, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
-        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11])
+        Quadrilateral([8, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
+        Quadrilateral([9, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]),
     )
 
     converter = DoorAndWindowRectanglesToPolygonsConverter()
@@ -44,3 +45,5 @@ def test_door_and_window_rectangles_to_polygons_converter():
         Polygon([(7, 1), (3, 4), (6, 7), (9, 10)])
     assert door_and_window_polygons.inside_stool == \
         Polygon([(8, 1), (3, 4), (6, 7), (9, 10)])
+    assert door_and_window_polygons.awning == \
+        Polygon([(9, 1), (3, 4), (6, 7), (9, 10)])

@@ -1,4 +1,5 @@
 """ Module for DoorAndWindowRectanglesToPolygonsConverter class. """
+from typing import Union
 from shapely.geometry import Polygon
 
 from ..models.door_and_window_polygons import DoorAndWindowPolygons
@@ -6,6 +7,8 @@ from ..models.door_and_window_rectangles import DoorAndWindowRectangles
 from ..models.quadrilateral import Quadrilateral
 
 # pylint: disable=too-few-public-methods
+
+
 class DoorAndWindowRectanglesToPolygonsConverter():
     """ Responsible for converting door and window rectangles to polygons. """
 
@@ -39,12 +42,14 @@ class DoorAndWindowRectanglesToPolygonsConverter():
             inside_head_jamb_wall=self._convert_rectangle_to_polygon(
                 door_and_window_rectangles.inside_head_jamb_wall),
             inside_stool=self._convert_rectangle_to_polygon(
-                door_and_window_rectangles.inside_stool)
+                door_and_window_rectangles.inside_stool),
+            awning=self._convert_rectangle_to_polygon(
+                door_and_window_rectangles.awning)
         )
 
     @classmethod
-    def _convert_rectangle_to_polygon(cls, rectangle: Quadrilateral) -> Polygon:
-        return Polygon([
+    def _convert_rectangle_to_polygon(cls, rectangle: Union[Quadrilateral, None]) -> Polygon:
+        return Polygon() if rectangle is None else Polygon([
             rectangle.corner_1[0:2],
             rectangle.corner_2[0:2],
             rectangle.corner_3[0:2],

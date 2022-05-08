@@ -12,7 +12,7 @@ class CoordinateTransformations():
     """ Class for coordinate transformations. """
 
     @classmethod
-    def _get_sin_cos(cls, angle: float) -> Tuple[float, float]:
+    def get_sin_cos(cls, angle: float) -> Tuple[float, float]:
         """
         Gets the sine and the cosine of the specified angle.
 
@@ -42,8 +42,8 @@ class CoordinateTransformations():
         Returns:
             The 3D rectangular coordinate correspond to specified polar coordinate.
         """
-        (sin_azimuth, cos_azimuth) = self._get_sin_cos(azimuth)
-        (sin_elevation, cos_elevation) = self._get_sin_cos(90 - elevation)
+        (sin_azimuth, cos_azimuth) = self.get_sin_cos(azimuth)
+        (sin_elevation, cos_elevation) = self.get_sin_cos(90 - elevation)
 
         return (sin_elevation*cos_azimuth, sin_elevation*sin_azimuth, cos_elevation)
 
@@ -60,7 +60,7 @@ class CoordinateTransformations():
         Returns:
             The numpy array contains the rotation matrix.
         """
-        (sin, cos) = self._get_sin_cos(angle)
+        (sin, cos) = self.get_sin_cos(angle)
 
         return np.array([
             [1, 0, 0, 0],
@@ -81,7 +81,7 @@ class CoordinateTransformations():
         Returns:
             The numpy array contains the rotation matrix.
         """
-        (sin, cos) = self._get_sin_cos(angle)
+        (sin, cos) = self.get_sin_cos(angle)
 
         return np.array([
             [cos, 0., sin, 0.],

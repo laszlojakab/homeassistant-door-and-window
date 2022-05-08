@@ -75,6 +75,27 @@
         },
         "description": "Set horizon profile measurements. You can measure the elevation of horizon for example with a mobile phone application. Set the measured elevations at the specific points. First value should be the left most measurement from the window and the last value should be the right most measurement. Always try to measure in equal angle distances!",
         "title": "Horizon profile"
+      },
+      "has_awning": {
+        "data": {
+          "has_awning": "Door or window has an awning."
+        },
+        "description": "Set the checkbox if door or window has an awning.",
+        "title": "Awning"
+      },
+      "awning": {
+        "data": {
+          "awning_min_depth": "Minimum depth",
+          "awning_max_depth": "Maximum depth",
+          "awning_left_distance": "Left",
+          "awning_right_distance": "Right",
+          "awning_closest_top": "Closest top",
+          "awning_farthest_top": "Farthest top",
+          "awning_distance": "Distance",
+          "awning_cover_entity": "Awning cover entity"
+        },
+        "description": "Set the awning parameters. Minimum depth is the distance between the wall and the farthest part of the awning when the awning is closed. Maximum depth is the distance between the wall and the farthest part of the awning when the awning is opened. If awning is fixed (not closable) then the minimum and the maximum depth are equal. Left is the distance from the left side of the window to the left end of the awning as seen from inside the room. Right is the distance from the right side of the window to the right end of the awning as seen from inside the room. Closest top is the distance between the top of the window wall indent and the bottom of the awning at the closest point to the wall. Farthest top is the distance between the top of the window wall indent and the bottom of the awning at the farthest point from the wall. The awning distance is the distance between the wall and the awning (it is 0 when awning attached to the wall).",
+        "title": "Awning parameters"
       }
     },
     "error": {
@@ -159,6 +180,27 @@
         },
         "description": "Set horizon profile measurements. You can measure the elevation of horizon for example with a mobile phone application. Set the measured elevations at the specific points. First value should be the left most measurement from the window and the last value should be the right most measurement. Always try to measure in equal angle distances!",
         "title": "Horizon profile"
+      },
+      "has_awning": {
+        "data": {
+          "has_awning": "Door or window has an awning."
+        },
+        "description": "Set the checkbox if door or window has an awning.",
+        "title": "Awning"
+      },
+      "awning": {
+        "data": {
+          "awning_min_depth": "Minimum depth",
+          "awning_max_depth": "Maximum depth",
+          "awning_left_distance": "Left",
+          "awning_right_distance": "Right",
+          "awning_closest_top": "Closest top",
+          "awning_farthest_top": "Farthest top",
+          "awning_distance": "Distance",
+          "awning_cover_entity": "Awning cover entity"
+        },
+        "description": "Set the awning parameters. Minimum depth is the distance between the wall and the farthest part of the awning when the awning is closed. Maximum depth is the distance between the wall and the farthest part of the awning when the awning is opened. If awning is fixed (not closable) then the minimum and the maximum depth are equal. Left is the distance from the left side of the window to the left end of the awning as seen from inside the room. Right is the distance from the right side of the window to the right end of the awning as seen from inside the room. Closest top is the distance between the top of the window wall indent and the bottom of the awning at the closest point to the wall. Farthest top is the distance between the top of the window wall indent and the bottom of the awning at the farthest point from the wall. The awning distance is the distance between the wall and the awning (it is 0 when awning attached to the wall).",
+        "title": "Awning parameters"
       }
     },
     "abort": {

@@ -6,15 +6,17 @@ from homeassistant.const import CONF_NAME
 from homeassistant.helpers.device_registry import async_get_registry
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-from .const import (CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
-                    CONF_FRAME_THICKNESS, CONF_HEIGHT, CONF_HORIZON_PROFILE,
-                    CONF_HORIZON_PROFILE_ENTITY, CONF_HORIZON_PROFILE_TYPE,
-                    CONF_INSIDE_DEPTH, CONF_MANUFACTURER, CONF_MODEL,
-                    CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT, CONF_TILT,
-                    CONF_TYPE, CONF_WIDTH, DOMAIN,
-                    HORIZON_PROFILE_TYPE_DYNAMIC, TYPE_DOOR)
+from .const import (CONF_AWNING_CLOSEST_TOP, CONF_AWNING_DISTANCE, CONF_AWNING_FARTHEST_TOP,
+                    CONF_AWNING_LEFT_DISTANCE, CONF_AWNING_MAX_DEPTH,
+                    CONF_AWNING_MIN_DEPTH, CONF_AWNING_RIGHT_DISTANCE,
+                    CONF_AZIMUTH, CONF_FRAME_FACE_THICKNESS,
+                    CONF_FRAME_THICKNESS, CONF_HAS_AWNING, CONF_HEIGHT,
+                    CONF_HORIZON_PROFILE, CONF_INSIDE_DEPTH, CONF_MANUFACTURER,
+                    CONF_MODEL, CONF_OUTSIDE_DEPTH, CONF_PARAPET_WALL_HEIGHT,
+                    CONF_TILT, CONF_TYPE, CONF_WIDTH, DOMAIN, TYPE_DOOR)
 from .coordinator import Coordinator
 from .data_store import DataStore
+from .models.awning import Awning
 from .models.door_and_window import DoorAndWindow
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,6 +58,24 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
     data_store: DataStore = hass.data[DOMAIN]
 
     if not data_store.is_coordinator_registered(config_entry.entry_id):
+        awning : Awning
+        if config_entry.data[CONF_HAS_AWNING]:
+            awning = Awning(
+                config_entry.data[CONF_AWNING_LEFT_DISTANCE] + \
+                config_entry.data[CONF_WIDTH] + config_entry.data[CONF_AWNING_RIGHT_DISTANCE],
+                config_entry.data[CONF_AWNING_MIN_DEPTH],
+                config_entry.data[CONF_AWNING_MAX_DEPTH],
+                -config_entry.data[CONF_WIDTH] / 2 + \
+                config_entry.data[CONF_AWNING_RIGHT_DISTANCE] - \
+                config_entry.data[CONF_AWNING_LEFT_DISTANCE],
+                config_entry.data[CONF_AWNING_CLOSEST_TOP],
+                config_entry.data[CONF_AWNING_FARTHEST_TOP],
+                config_entry.data[CONF_AWNING_DISTANCE],
+                100,
+            )
+        else:
+            awning = None
+
         door_and_window = DoorAndWindow(
             config_entry.data[CONF_TYPE],
             config_entry.data[CONF_NAME],
@@ -70,7 +90,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0),
             config_entry.data[CONF_AZIMUTH],
             config_entry.data[CONF_TILT],
-            config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0])
+            config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0]),
+            awning
         )
         data_store.set_coordinator(config_entry.entry_id, Coordinator(
             hass,
@@ -136,6 +157,22 @@ async def update_listener(hass: HomeAssistantType, config_entry: ConfigEntry):
     door_and_window.azimuth = config_entry.data[CONF_AZIMUTH]
     door_and_window.tilt = config_entry.data[CONF_TILT]
     door_and_window.horizon_profile = config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0])
+
+    if config_entry.data[CONF_HAS_AWNING]:
+        door_and_window.awning = Awning(
+            config_entry.data[CONF_AWNING_LEFT_DISTANCE] + \
+            config_entry.data[CONF_WIDTH] + config_entry.data[CONF_AWNING_RIGHT_DISTANCE],
+            config_entry.data[CONF_AWNING_MIN_DEPTH],
+            config_entry.data[CONF_AWNING_MAX_DEPTH],
+            -config_entry.data[CONF_WIDTH] / 2 + config_entry.data[CONF_AWNING_RIGHT_DISTANCE] - \
+            config_entry.data[CONF_AWNING_LEFT_DISTANCE],
+            config_entry.data[CONF_AWNING_CLOSEST_TOP],
+            config_entry.data[CONF_AWNING_FARTHEST_TOP],
+            config_entry.data[CONF_AWNING_DISTANCE],
+            100,
+        )
+    else:
+        door_and_window.awning = None
 
     device_registry = await async_get_registry(hass)
 
