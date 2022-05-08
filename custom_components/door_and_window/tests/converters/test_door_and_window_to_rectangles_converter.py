@@ -1,11 +1,10 @@
 """ Tests for door and window to rectangle converter. """
-from ...models.quadrilateral import Quadrilateral
-
-from ..utils import assert_quadrilaterals_are_close
-
+from ...converters.door_and_window_to_rectangles_converter import \
+    DoorAndWindowToRectanglesConverter
+from ...models.awning import Awning
 from ...models.door_and_window import DoorAndWindow
-
-from ...converters.door_and_window_to_rectangles_converter import DoorAndWindowToRectanglesConverter
+from ...models.quadrilateral import Quadrilateral
+from ..utils import assert_quadrilaterals_are_close
 
 
 def test_door_and_window_to_rectangles_converter():
@@ -25,7 +24,17 @@ def test_door_and_window_to_rectangles_converter():
         900,
         0,
         90,
-        [0, 0]
+        [0, 0],
+        Awning(
+            1000,
+            1200,
+            1200,
+            0,
+            100,
+            0,
+            150,
+            100
+        )
     )
 
     rectangles = converter.convert(door_and_window)
@@ -129,6 +138,17 @@ def test_door_and_window_to_rectangles_converter():
         "Outside right jamb wall: "
     )
 
+    assert_quadrilaterals_are_close(
+        rectangles.awning,
+        Quadrilateral(
+            [-500, 2500, -250],
+            [500, 2500, -250],
+            [500, 2400, -1450],
+            [-500, 2400, -1450],
+        ),
+        "Awning: "
+    )
+
 
 def test_door_and_window_to_rectangles_converter_with_azimuth():
     """ Tests the door and window converter on a window looking to east. """
@@ -148,7 +168,17 @@ def test_door_and_window_to_rectangles_converter_with_azimuth():
         # window rotated east (clockwise 90)
         90,
         90,
-        [0, 0]
+        [0, 0],
+        Awning(
+            1000,
+            1200,
+            1200,
+            0,
+            100,
+            0,
+            150,
+            100
+        )
     )
 
     rectangles = converter.convert(door_and_window)
@@ -252,6 +282,16 @@ def test_door_and_window_to_rectangles_converter_with_azimuth():
         "Outside right jamb wall: "
     )
 
+    assert_quadrilaterals_are_close(
+        rectangles.awning,
+        Quadrilateral(
+            [-250, 2500, 500],
+            [-250, 2500, -500],
+            [-1450, 2400, -500],
+            [-1450, 2400, 500],
+        ),
+        "Awning: "
+    )
 
 def test_door_and_window_to_rectangles_converter_with_0_tilt():
     """ Tests the door and window converter on a window looking to east. """
@@ -271,7 +311,8 @@ def test_door_and_window_to_rectangles_converter_with_0_tilt():
         0,
         # window is looking upward to the sky
         0,
-        [0, 0]
+        [0, 0],
+        None
     )
 
     rectangles = converter.convert(door_and_window)
@@ -374,3 +415,5 @@ def test_door_and_window_to_rectangles_converter_with_0_tilt():
         ),
         "Outside right jamb wall: "
     )
+
+    assert rectangles.awning is None

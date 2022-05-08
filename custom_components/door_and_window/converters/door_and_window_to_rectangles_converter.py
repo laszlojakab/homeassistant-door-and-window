@@ -1,10 +1,14 @@
 """ Module for door and window to rectangles converter. """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
+from ..converters.awning_to_rectangle_converter import \
+    AwningToRectangleConverter
 from ..models.door_and_window_rectangles import DoorAndWindowRectangles
 from ..models.quadrilateral import Quadrilateral
+from ..transformers.awning_rectangle_transformer import \
+    AwningRectangleTransformer
 from ..transformers.coordinate_transformations import CoordinateTransformations
 
 if TYPE_CHECKING:
@@ -47,6 +51,15 @@ class DoorAndWindowToRectanglesConverter():
         transformation_matrix = transformation_matrix.dot(
             self._transformations.get_rotation_matrix_x(90 - door_and_window.tilt)
         )
+
+        awning_rectangle: Union[Quadrilateral, None] = None
+        if door_and_window.awning:
+            awning_to_rectangle_converter = AwningToRectangleConverter()
+            awning_rectangle_transformer = AwningRectangleTransformer()
+            awning_rectangle = awning_rectangle_transformer.transform(
+                awning_to_rectangle_converter.convert(door_and_window.awning),
+                door_and_window
+            )
 
         return DoorAndWindowRectangles(
             glazing=Quadrilateral(
@@ -258,5 +271,5 @@ class DoorAndWindowToRectanglesConverter():
                 ]
             ).apply_matrix(transformation_matrix),
 
-            awning=None # TODO: convert awning
+            awning=awning_rectangle
         )
