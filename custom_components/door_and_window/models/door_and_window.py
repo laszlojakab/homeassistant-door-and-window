@@ -9,7 +9,7 @@ from ..converters.door_and_window_rectangles_to_light_information_converter impo
 from ..converters.door_and_window_to_rectangles_converter import \
     DoorAndWindowToRectanglesConverter
 from ..utils import normalize_angle
-
+from .awning import Awning
 from .door_and_window_rectangles import DoorAndWindowRectangles
 from .event_handler import EventHandler
 
@@ -48,7 +48,8 @@ class DoorAndWindow():
         parapet_wall_height: float,
         azimuth: float,
         tilt: float,
-        horizon_profile: List[float]
+        horizon_profile: List[float],
+        awning: Union[Awning, None]
     ):
         """
         Initialize a new instance of DoorAndWindow class
@@ -89,6 +90,8 @@ class DoorAndWindow():
                 For roof tilted windows this value should be the roof tilt angle.
             horizon_profile:
                 The elevation values of horizon as seen from the door and window.
+            awning:
+                The awning of for door and window.
         """
         self.type = type
         self.name = name
@@ -114,6 +117,8 @@ class DoorAndWindow():
         self._tilt_changed = EventHandler()
         self._horizon_profile = horizon_profile
         self._horizon_profile_changed = EventHandler()
+        self._awning = awning
+        self._awning_changed = EventHandler()
         self._horizon_elevation_at_sun_azimuth = None
         self._horizon_elevation_at_sun_azimuth_changed = EventHandler()
         self._angle_of_incidence = None
@@ -159,6 +164,49 @@ class DoorAndWindow():
             when horizon_profile property has changed.
         """
         return self._horizon_profile_changed.listen(callback)
+
+    @property
+    def awning(self) -> Union[Awning, None]:
+        """
+        Gets or sets the awning associated to the door and window.
+        """
+        return self._awning
+
+    @awning.setter
+    def awning(self, value:  Union[Awning, None]) -> None:
+        if value != self._awning:
+            if self._awning:
+                # calling dispose removes
+                # eventhandler for on_current_depth_change event
+                self._awning.dispose()
+
+            self._awning = value
+            self._awning_changed.fire(value)
+
+            if self._awning:
+                # pylint: disable=unused-argument
+                def on_awning_depth_change(depth: float):
+                    self._rectangles_spoiled = True
+
+                self._awning.on_current_depth_changed(on_awning_depth_change)
+            self._rectangles_spoiled = True
+
+    def on_awning_changed(
+        self,
+        callback: Callable[[List[float]], None]
+    ) -> Callable[[], None]:
+        """
+        Calls the specified function whenever the awning property has changed.
+
+        Args:
+            callback:
+                The function to call when awning property has changed.
+
+        Returns:
+            A function to stop calling the callback function
+            when awning property has changed.
+        """
+        return self._awning_changed.listen(callback)
 
     @property
     def width(self) -> float:
@@ -672,3 +720,4 @@ class DoorAndWindow():
         self._sunny_glazing_area_changed.dispose()
         self._sunny_glazing_area_percentage_changed.dispose()
         self._glazing_has_direct_sunlight_changed.dispose()
+        self._awning_changed.dispose()

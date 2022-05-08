@@ -70,7 +70,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry) 
             config_entry.data.get(CONF_PARAPET_WALL_HEIGHT, 0),
             config_entry.data[CONF_AZIMUTH],
             config_entry.data[CONF_TILT],
-            config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0])
+            config_entry.data.get(CONF_HORIZON_PROFILE, [0, 0]),
+            None # TODO add awning
         )
         data_store.set_coordinator(config_entry.entry_id, Coordinator(
             hass,
